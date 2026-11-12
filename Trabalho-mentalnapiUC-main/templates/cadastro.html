@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - NAPI</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ========== RESET E BASE ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #7ecfc5 0%, #c1d5e6 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* ========== PROTEGER ÍCONES DO VLIBRAS ========== */
+        .fa-solid,
+        .fa-regular,
+        .fas,
+        .far,
+        .fa {
+            font-family: 'Font Awesome 6 Free' !important;
+            font-weight: 900 !important;
+            font-variant: normal !important;
+            text-transform: none !important;
+            -webkit-font-smoothing: antialiased !important;
+            -moz-osx-font-smoothing: grayscale !important;
+        }
+        .fa-regular {
+            font-weight: 400 !important;
+        }
+        .fa-brands,
+        .fab {
+            font-family: 'Font Awesome 6 Brands' !important;
+            font-weight: 400 !important;
+        }
+
+        /* ========== INDICADOR DE FOCO TECLADO ========== */
+        a:focus-visible,
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible {
+            outline: 3px solid #4a9e8f !important;
+            outline-offset: 3px !important;
+            box-shadow: 0 0 0 5px rgba(74, 158, 143, 0.2) !important;
+        }
+
+        /* ========== CURSOR AMPLIADO ========== */
+        body.cursor-grande * {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="black" opacity="0.3"/><circle cx="16" cy="16" r="10" fill="white" stroke="black" stroke-width="2"/><circle cx="16" cy="16" r="4" fill="black"/></svg>') 16 16, auto !important;
+        }
+
+        /* ========== CARD ========== */
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 420px;
+            padding: 30px 25px;
+            transition: background 0.3s, border 0.3s;
+        }
+
+        .banner {
+            width: 100%;
+            height: 150px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #1b6299, #4a90d9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+            overflow: hidden;
+            position: relative;
+        }
+        .banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 6px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .form-group label i { color: #1b6299; margin-right: 6px; }
+        .required { color: #dc3545; }
+        .input-wrapper { position: relative; }
+        .form-control {
+            width: 100%;
+            padding: 12px 40px 12px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            background-color: #f4f7fb;
+            font-size: 14px;
+            color: #333;
+            transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+        }
+        .form-control option {
+            background-color: #fff;
+            color: #333;
+        }
+        .input-icon-right {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a0aab5;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background-color: #0d6efd;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .btn-submit:hover { background-color: #0b5ed7; }
+        .btn-submit:active { transform: scale(0.98); }
+        .footer-link {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 13px;
+        }
+        .footer-link a {
+            color: #0d6efd;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .footer-link a:hover { text-decoration: underline; }
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .btn-voltar {
+            display: inline-block;
+            margin-top: 10px;
+            color: #666;
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.3s;
+        }
+        .btn-voltar:hover {
+            color: #333;
+            text-decoration: underline;
+        }
+        .btn-voltar i {
+            margin-right: 5px;
+        }
+
+        /* ========== MODO ESCURO ========== */
+        body.modo-escuro {
+            background: #1a1a2e !important;
+            color: #e0e0e0 !important;
+        }
+        body.modo-escuro .card {
+            background: #16213e !important;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5) !important;
+        }
+        body.modo-escuro .card .form-group label {
+            color: #ccc !important;
+        }
+        body.modo-escuro .card .form-group label i {
+            color: #4a9e8f !important;
+        }
+        body.modo-escuro .card .form-control {
+            background-color: #1e2a4a !important;
+            border-color: #3a4a6a !important;
+            color: #e0e0e0 !important;
+        }
+        body.modo-escuro .card .form-control::placeholder {
+            color: #888 !important;
+        }
+        body.modo-escuro .card .form-control option {
+            background-color: #1e2a4a !important;
+            color: #e0e0e0 !important;
+        }
+        body.modo-escuro .card .input-icon-right {
+            color: #6a7a8a !important;
+        }
+        body.modo-escuro .card .btn-submit {
+            background-color: #4a9e8f !important;
+        }
+        body.modo-escuro .card .btn-submit:hover {
+            background-color: #3a8a7a !important;
+        }
+        body.modo-escuro .card .footer-link {
+            color: #aaa !important;
+        }
+        body.modo-escuro .card .footer-link a {
+            color: #4a9e8f !important;
+        }
+        body.modo-escuro .card .btn-voltar {
+            color: #aaa !important;
+        }
+        body.modo-escuro .card .btn-voltar:hover {
+            color: #fff !important;
+        }
+        body.modo-escuro .card .alert-danger {
+            background-color: #3a1a1a !important;
+            color: #ff7d7d !important;
+            border-color: #5a2a2a !important;
+        }
+        body.modo-escuro .card .alert-success {
+            background-color: #1a3a2a !important;
+            color: #7ddfa0 !important;
+            border-color: #2a5a3a !important;
+        }
+        body.modo-escuro .card .alert-warning {
+            background-color: #3a3a1a !important;
+            color: #ffdd7d !important;
+            border-color: #5a5a2a !important;
+        }
+        body.modo-escuro .card .alert-info {
+            background-color: #1a2a3a !important;
+            color: #7dcdff !important;
+            border-color: #2a4a5a !important;
+        }
+
+        /* ========== ALTO CONTRASTE ========== */
+        body.contraste {
+            background: #000000 !important;
+            color: #ffffff !important;
+        }
+        body.contraste .card {
+            background: #111111 !important;
+            border: 2px solid #ffff00 !important;
+        }
+        body.contraste .card .form-group label {
+            color: #ffffff !important;
+        }
+        body.contraste .card .form-group label i {
+            color: #ffff00 !important;
+        }
+        body.contraste .card .form-control {
+            background-color: #222222 !important;
+            border-color: #ffff00 !important;
+            color: #ffffff !important;
+        }
+        body.contraste .card .form-control::placeholder {
+            color: #aaaaaa !important;
+        }
+        body.contraste .card .form-control option {
+            background-color: #222222 !important;
+            color: #ffffff !important;
+        }
+        body.contraste .card .input-icon-right {
+            color: #ffff00 !important;
+        }
+        body.contraste .card .btn-submit {
+            background-color: #ffff00 !important;
+            color: #000000 !important;
+        }
+        body.contraste .card .btn-submit:hover {
+            background-color: #ffdd00 !important;
+        }
+        body.contraste .card .footer-link {
+            color: #ffffff !important;
+        }
+        body.contraste .card .footer-link a {
+            color: #ffff00 !important;
+        }
+        body.contraste .card .btn-voltar {
+            color: #ffff00 !important;
+        }
+        body.contraste .card .btn-voltar:hover {
+            color: #ffffff !important;
+        }
+        body.contraste .card .alert-danger {
+            background-color: #220000 !important;
+            color: #ff8888 !important;
+            border-color: #ff0000 !important;
+        }
+        body.contraste .card .alert-success {
+            background-color: #002200 !important;
+            color: #88ff88 !important;
+            border-color: #00ff00 !important;
+        }
+        body.contraste .card .alert-warning {
+            background-color: #222200 !important;
+            color: #ffff88 !important;
+            border-color: #ffff00 !important;
+        }
+        body.contraste .card .alert-info {
+            background-color: #002222 !important;
+            color: #88ffff !important;
+            border-color: #00ffff !important;
+        }
+
+        /* ========== FONTE DISLEXIA ========== */
+        body.fonte-dislexia,
+        body.fonte-dislexia *,
+        body.fonte-dislexia *::before,
+        body.fonte-dislexia *::after {
+            font-family: 'OpenDyslexic', 'Inter', 'Segoe UI', sans-serif !important;
+        }
+
+        /* ========== BOTÕES MAIORES ========== */
+        body.botoes-maiores .btn-submit {
+            padding: 18px !important;
+            font-size: 18px !important;
+            border-radius: 10px !important;
+        }
+        body.botoes-maiores .btn-voltar {
+            font-size: 16px !important;
+            padding: 10px !important;
+        }
+        body.botoes-maiores .form-control {
+            padding: 16px 40px 16px 16px !important;
+            font-size: 16px !important;
+        }
+        body.botoes-maiores .form-group label {
+            font-size: 16px !important;
+        }
+
+        /* ========== ESPAÇAMENTOS ========== */
+        body.espacamento-letras-1 { letter-spacing: 1px !important; }
+        body.espacamento-letras-2 { letter-spacing: 2px !important; }
+        body.espacamento-letras-3 { letter-spacing: 4px !important; }
+        body.espacamento-linhas-1 { line-height: 1.6 !important; }
+        body.espacamento-linhas-2 { line-height: 2 !important; }
+        body.espacamento-linhas-3 { line-height: 2.8 !important; }
+
+        body.espacamento-letras-1 * { letter-spacing: 1px !important; }
+        body.espacamento-letras-2 * { letter-spacing: 2px !important; }
+        body.espacamento-letras-3 * { letter-spacing: 4px !important; }
+        body.espacamento-linhas-1 * { line-height: 1.6 !important; }
+        body.espacamento-linhas-2 * { line-height: 2 !important; }
+        body.espacamento-linhas-3 * { line-height: 2.8 !important; }
+
+        /* ========== PAUSAR ANIMAÇÕES ========== */
+        body.animacoes-pausadas *,
+        body.animacoes-pausadas *::before,
+        body.animacoes-pausadas *::after {
+            animation-duration: 0.001s !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.001s !important;
+            animation-play-state: paused !important;
+        }
+
+        /* ========== DALTONISMO ========== */
+        body.daltonismo-protanopia { filter: url('#protanopia') !important; }
+        body.daltonismo-deuteranopia { filter: url('#deuteranopia') !important; }
+        body.daltonismo-tritanopia { filter: url('#tritanopia') !important; }
+
+        .filtros-daltonismo {
+            position: absolute;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+        }
+
+        /* ========== ACESSIBILIDADE ========== */
+        .acessibilidade {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 9999;
+        }
+
+        .acessibilidade button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: #4a9e8f;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .acessibilidade button:hover {
+            transform: scale(1.1);
+            background: #3a8a7a;
+        }
+
+        .painel-acessibilidade {
+            position: fixed;
+            right: 20px;
+            bottom: 480px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            width: 280px;
+            max-height: 460px;
+            overflow-y: auto;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+            z-index: 9998;
+            display: none;
+            border: 1px solid rgba(74, 158, 143, 0.2);
+        }
+
+        .painel-acessibilidade.aberto {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .painel-acessibilidade h3 {
+            font-size: 16px;
+            color: #1a3a3f;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 700;
+            border-bottom: 2px solid #4a9e8f;
+            padding-bottom: 10px;
+        }
+
+        .painel-acessibilidade .grupo-botoes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .painel-acessibilidade .grupo-botoes button {
+            padding: 6px 8px;
+            border: none;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 45px;
+            max-width: 75px;
+            color: white;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 3px !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .painel-acessibilidade .grupo-botoes button i {
+            font-size: 11px !important;
+            flex-shrink: 0 !important;
+            font-family: 'Font Awesome 6 Free' !important;
+            font-weight: 900 !important;
+        }
+
+        .painel-acessibilidade .grupo-botoes button:hover {
+            transform: scale(1.05);
+        }
+
+        .painel-acessibilidade .grupo-botoes button.ativo {
+            outline: 3px solid #000;
+            outline-offset: 2px;
+        }
+
+        .btn-abrir-painel {
+            background: #4a9e8f !important;
+            color: white !important;
+        }
+
+        /* ========== MODO ESCURO - PAINEL ========== */
+        body.modo-escuro .painel-acessibilidade {
+            background: rgba(22, 33, 62, 0.95) !important;
+            border-color: #4a9e8f !important;
+        }
+        body.modo-escuro .painel-acessibilidade h3 {
+            color: #e0e0e0 !important;
+            border-bottom-color: #4a9e8f !important;
+        }
+
+        /* ========== ALTO CONTRASTE - PAINEL ========== */
+        body.contraste .painel-acessibilidade {
+            background: #111111 !important;
+            border: 2px solid #ffff00 !important;
+        }
+        body.contraste .painel-acessibilidade h3 {
+            color: #ffff00 !important;
+            border-bottom-color: #ffff00 !important;
+        }
+
+        @media (max-width: 600px) {
+            .painel-acessibilidade {
+                right: 10px;
+                bottom: 440px;
+                width: 220px;
+                padding: 15px;
+                max-height: 380px;
+            }
+            .painel-acessibilidade .grupo-botoes button {
+                font-size: 9px;
+                padding: 5px 6px;
+                min-width: 38px;
+                max-width: 60px;
+            }
+            .painel-acessibilidade .grupo-botoes button i {
+                font-size: 9px !important;
+            }
+            .acessibilidade button {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+            .card {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ========== FILTROS PARA DALTONISMO ========== -->
+    <svg class="filtros-daltonismo" aria-hidden="true">
+        <filter id="protanopia">
+            <feColorMatrix type="matrix" values="0.567,0.433,0,0,0 0.558,0.442,0,0,0 0,0.242,0.758,0,0 0,0,0,1,0" />
+        </filter>
+        <filter id="deuteranopia">
+            <feColorMatrix type="matrix" values="0.625,0.375,0,0,0 0.7,0.3,0,0,0 0,0.3,0.7,0,0 0,0,0,1,0" />
+        </filter>
+        <filter id="tritanopia">
+            <feColorMatrix type="matrix" values="0.95,0.05,0,0,0 0,0.433,0.567,0,0 0,0.475,0.525,0,0 0,0,0,1,0" />
+        </filter>
+    </svg>
+
+    <div class="card">
+        <div class="banner">
+            <img src="{{ url_for('static', filename='atendimento.png') }}" alt="MentalNAPI - Atendimento psicológico">
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('cadastrar') }}">
+            <div class="form-group">
+                <label for="nome"><i class="fa-regular fa-user"></i> Nome Completo <span class="required">*</span></label>
+                <div class="input-wrapper">
+                    <input type="text" id="nome" name="nome" class="form-control" placeholder="Seu nome completo" required aria-required="true">
+                    <i class="fa-regular fa-id-card input-icon-right" aria-hidden="true"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="usuario"><i class="fa-regular fa-id-badge"></i> Usuário <span class="required">*</span></label>
+                <div class="input-wrapper">
+                    <input type="text" id="usuario" name="usuario" class="form-control" placeholder="Escolha um usuário" required aria-required="true">
+                    <i class="fa-solid fa-user-pen input-icon-right" aria-hidden="true"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="senha"><i class="fa-solid fa-unlock-keyhole"></i> Senha <span class="required">*</span></label>
+                <div class="input-wrapper">
+                    <input type="password" id="senha" name="senha" class="form-control" placeholder="Crie uma senha" required aria-required="true">
+                    <i class="fa-solid fa-lock input-icon-right" aria-hidden="true"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="casa"><i class="fa-regular fa-building"></i> Unidade <span class="required">*</span></label>
+                <div class="input-wrapper">
+                    <select id="casa" name="casa" class="form-control" required aria-required="true">
+                        <option value="" disabled selected>Selecione sua unidade...</option>
+                        <option value="Unidade Natal-zn">Unidade Natal-zn</option>
+                        <option value="Unidade Mossoró">Unidade Mossoró</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-user-plus"></i> CADASTRAR
+            </button>
+        </form>
+
+        <div class="footer-link">
+            Já tem conta? <a href="{{ url_for('logar') }}">Faça login</a> | 
+            <a href="{{ url_for('inicio') }}">Início</a>
+        </div>
+
+        <div style="text-align: center; margin-top: 10px;">
+            <a href="{{ url_for('login') }}" class="btn-voltar">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- VLIBRAS -->
+    <!-- ============================================ -->
+    <div vw class="enabled">
+        <div vw-access-button class="active"></div>
+        <div vw-plugin-wrapper>
+            <div class="vw-plugin-top-wrapper"></div>
+        </div>
+    </div>
+
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>
+        new window.VLibras.Widget('https://vlibras.gov.br/app');
+    </script>
+
+    <!-- ============================================ -->
+    <!-- PAINEL DE ACESSIBILIDADE -->
+    <!-- ============================================ -->
+    <div class="painel-acessibilidade" id="painelAcessibilidade" role="dialog" aria-label="Painel de acessibilidade">
+        <h3><i class="fa-solid fa-universal-access"></i> Acessibilidade</h3>
+
+        <div class="grupo-botoes">
+            <button id="btnVoz" style="background:#4a9e8f;" title="Ler página em voz alta">
+                <i class="fa-solid fa-volume-high"></i> Voz
+            </button>
+            <button id="btnContraste" style="background:#6c757d;" title="Alto contraste">
+                <i class="fa-solid fa-circle-half-stroke"></i> Contraste
+            </button>
+            <button id="btnModoEscuro" style="background:#2c3e50;" title="Modo escuro">
+                <i class="fa-solid fa-moon"></i> Escuro
+            </button>
+        </div>
+
+        <div class="grupo-botoes">
+            <button id="btnFonteMais" style="background:#27ae60;" title="Aumentar fonte">
+                <i class="fa-solid fa-plus"></i> A+
+            </button>
+            <button id="btnFonteMenos" style="background:#e67e22;" title="Diminuir fonte">
+                <i class="fa-solid fa-minus"></i> A-
+            </button>
+            <button id="btnFonteNormal" style="background:#3498db;" title="Fonte normal">
+                <i class="fa-solid fa-font"></i> Normal
+            </button>
+        </div>
+
+        <div class="grupo-botoes">
+            <button id="btnEspacamentoLetras" style="background:#8e44ad;" title="Espaçamento entre letras">
+                <i class="fa-solid fa-arrow-left-right"></i> Letras
+            </button>
+            <button id="btnEspacamentoLinhas" style="background:#2980b9;" title="Espaçamento entre linhas">
+                <i class="fa-solid fa-arrows-up-down"></i> Linhas
+            </button>
+            <button id="btnDislexia" style="background:#e74c3c;" title="Fonte para dislexia">
+                <i class="fa-solid fa-brain"></i> Dislexia
+            </button>
+        </div>
+
+        <div class="grupo-botoes">
+            <button id="btnCursorGrande" style="background:#1abc9c;" title="Cursor ampliado">
+                <i class="fa-solid fa-mouse-pointer"></i> Cursor
+            </button>
+            <button id="btnBotoesMaiores" style="background:#16a085;" title="Botões maiores">
+                <i class="fa-solid fa-expand"></i> Botões
+            </button>
+            <button id="btnPausarAnimacoes" style="background:#f39c12;" title="Pausar animações">
+                <i class="fa-solid fa-pause"></i> Pausar
+            </button>
+        </div>
+
+        <div class="grupo-botoes">
+            <button id="btnDaltonismoProtanopia" style="background:#c0392b;" title="Daltonismo - Protanopia">
+                <i class="fa-solid fa-eye"></i> P
+            </button>
+            <button id="btnDaltonismoDeuteranopia" style="background:#27ae60;" title="Daltonismo - Deuteranopia">
+                <i class="fa-solid fa-eye"></i> D
+            </button>
+            <button id="btnDaltonismoTritanopia" style="background:#2980b9;" title="Daltonismo - Tritanopia">
+                <i class="fa-solid fa-eye"></i> T
+            </button>
+            <button id="btnDaltonismoOff" style="background:#95a5a6;" title="Desativar daltonismo">
+                <i class="fa-solid fa-eye-slash"></i> Off
+            </button>
+        </div>
+
+        <div style="text-align:center;margin-top:10px;">
+            <button id="btnResetarAcessibilidade"
+                style="background:#e74c3c;color:white;border:none;padding:8px 20px;border-radius:10px;font-weight:600;cursor:pointer;">
+                <i class="fa-solid fa-rotate"></i> Resetar
+            </button>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- BOTÕES FLUTUANTES DE ACESSIBILIDADE -->
+    <!-- ============================================ -->
+    <div class="acessibilidade">
+        <button id="btnAbrirPainel" class="btn-abrir-painel" title="Abrir painel de acessibilidade"
+            aria-label="Abrir painel de acessibilidade">
+            <i class="fa-solid fa-universal-access"></i>
+        </button>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- SCRIPTS -->
+    <!-- ============================================ -->
+    <script>
+        // ================================================================
+        // RESTAURAR ÍCONES APÓS VLIBRAS MODIFICAR O DOM
+        // ================================================================
+        function restaurarIcones() {
+            const botoes = document.querySelectorAll('.painel-acessibilidade .grupo-botoes button, .acessibilidade button');
+            botoes.forEach(btn => {
+                if (!btn.dataset.textoOriginal) {
+                    btn.dataset.textoOriginal = btn.innerHTML;
+                }
+                if (btn.innerHTML !== btn.dataset.textoOriginal) {
+                    btn.innerHTML = btn.dataset.textoOriginal;
+                }
+            });
+        }
+
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                    restaurarIcones();
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(restaurarIcones, 100);
+            setTimeout(restaurarIcones, 500);
+            setTimeout(restaurarIcones, 1000);
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true,
+                characterData: true
+            });
+        });
+
+        window.addEventListener('load', function() {
+            setTimeout(restaurarIcones, 2000);
+        });
+
+        // ================================================================
+        // NAVEGAÇÃO POR TECLADO - INDICADOR DE FOCO
+        // ================================================================
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Tab') {
+                document.body.classList.add('teclado');
+            }
+        });
+
+        document.addEventListener('mousedown', function() {
+            document.body.classList.remove('teclado');
+        });
+
+        // ================================================================
+        // PAINEL DE ACESSIBILIDADE - ABRIR/FECHAR
+        // ================================================================
+        const btnAbrirPainel = document.getElementById('btnAbrirPainel');
+        const painel = document.getElementById('painelAcessibilidade');
+        let painelAberto = false;
+
+        btnAbrirPainel.addEventListener('click', function() {
+            painel.classList.toggle('aberto');
+            painelAberto = !painelAberto;
+            this.innerHTML = painelAberto ?
+                '<i class="fa-solid fa-xmark"></i>' :
+                '<i class="fa-solid fa-universal-access"></i>';
+            this.setAttribute('aria-label', painelAberto ? 'Fechar painel de acessibilidade' :
+                'Abrir painel de acessibilidade');
+            setTimeout(restaurarIcones, 50);
+        });
+
+        document.addEventListener('click', function(e) {
+            if (painelAberto && !painel.contains(e.target) && e.target !== btnAbrirPainel) {
+                painel.classList.remove('aberto');
+                painelAberto = false;
+                btnAbrirPainel.innerHTML = '<i class="fa-solid fa-universal-access"></i>';
+            }
+        });
+
+        // ================================================================
+        // 1. LEITURA EM VOZ
+        // ================================================================
+        document.getElementById('btnVoz').addEventListener('click', function() {
+            try {
+                speechSynthesis.cancel();
+                const texto = document.body.innerText || document.body.textContent;
+                if (!texto || texto.trim().length === 0) {
+                    alert('Não há texto para ler nesta página.');
+                    return;
+                }
+                const leitura = new SpeechSynthesisUtterance(texto);
+                leitura.lang = 'pt-BR';
+                leitura.rate = 1;
+                leitura.pitch = 1;
+                leitura.volume = 1;
+                leitura.onerror = function(e) {
+                    alert('Erro ao tentar ler a página. Tente novamente.');
+                };
+                speechSynthesis.speak(leitura);
+            } catch (error) {
+                alert('Seu navegador não suporta leitura em voz alta.');
+            }
+        });
+
+        // ================================================================
+        // 2. ALTO CONTRASTE
+        // ================================================================
+        document.getElementById('btnContraste').addEventListener('click', function() {
+            document.body.classList.toggle('contraste');
+            this.classList.toggle('ativo');
+        });
+
+        // ================================================================
+        // 3. MODO ESCURO
+        // ================================================================
+        document.getElementById('btnModoEscuro').addEventListener('click', function() {
+            document.body.classList.toggle('modo-escuro');
+            this.classList.toggle('ativo');
+        });
+
+        // ================================================================
+        // 4. AUMENTAR / DIMINUIR / RESETAR FONTE
+        // ================================================================
+        let tamanhoFonte = 0;
+        const elementosTexto = document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, .form-group label, .form-control, .btn-submit, .footer-link, .btn-voltar, .alert, .required');
+
+        document.getElementById('btnFonteMais').addEventListener('click', function() {
+            if (tamanhoFonte < 2) tamanhoFonte++;
+            aplicarTamanhoFonte();
+        });
+
+        document.getElementById('btnFonteMenos').addEventListener('click', function() {
+            if (tamanhoFonte > -1) tamanhoFonte--;
+            aplicarTamanhoFonte();
+        });
+
+        document.getElementById('btnFonteNormal').addEventListener('click', function() {
+            tamanhoFonte = 0;
+            aplicarTamanhoFonte();
+        });
+
+        function aplicarTamanhoFonte() {
+            const tamanhos = { '-1': '14px', '0': '', '1': '20px', '2': '26px' };
+            const tamanho = tamanhos[tamanhoFonte] || '';
+            elementosTexto.forEach(el => {
+                el.style.fontSize = tamanho;
+            });
+        }
+
+        // ================================================================
+        // 5. ESPAÇAMENTO ENTRE LETRAS
+        // ================================================================
+        let nivelEspacamentoLetras = 0;
+        document.getElementById('btnEspacamentoLetras').addEventListener('click', function() {
+            nivelEspacamentoLetras = (nivelEspacamentoLetras + 1) % 4;
+            document.body.classList.remove('espacamento-letras-1', 'espacamento-letras-2', 'espacamento-letras-3');
+            if (nivelEspacamentoLetras === 1) document.body.classList.add('espacamento-letras-1');
+            if (nivelEspacamentoLetras === 2) document.body.classList.add('espacamento-letras-2');
+            if (nivelEspacamentoLetras === 3) document.body.classList.add('espacamento-letras-3');
+            this.classList.toggle('ativo', nivelEspacamentoLetras > 0);
+        });
+
+        // ================================================================
+        // 6. ESPAÇAMENTO ENTRE LINHAS
+        // ================================================================
+        let nivelEspacamentoLinhas = 0;
+        document.getElementById('btnEspacamentoLinhas').addEventListener('click', function() {
+            nivelEspacamentoLinhas = (nivelEspacamentoLinhas + 1) % 4;
+            document.body.classList.remove('espacamento-linhas-1', 'espacamento-linhas-2', 'espacamento-linhas-3');
+            if (nivelEspacamentoLinhas === 1) document.body.classList.add('espacamento-linhas-1');
+            if (nivelEspacamentoLinhas === 2) document.body.classList.add('espacamento-linhas-2');
+            if (nivelEspacamentoLinhas === 3) document.body.classList.add('espacamento-linhas-3');
+            this.classList.toggle('ativo', nivelEspacamentoLinhas > 0);
+        });
+
+        // ================================================================
+        // 7. FONTE PARA DISLEXIA
+        // ================================================================
+        document.getElementById('btnDislexia').addEventListener('click', function() {
+            document.body.classList.toggle('fonte-dislexia');
+            this.classList.toggle('ativo');
+        });
+
+        // ================================================================
+        // 8. CURSOR AMPLIADO
+        // ================================================================
+        document.getElementById('btnCursorGrande').addEventListener('click', function() {
+            document.body.classList.toggle('cursor-grande');
+            this.classList.toggle('ativo');
+        });
+
+        // ================================================================
+        // 9. BOTÕES MAIORES
+        // ================================================================
+        document.getElementById('btnBotoesMaiores').addEventListener('click', function() {
+            document.body.classList.toggle('botoes-maiores');
+            this.classList.toggle('ativo');
+        });
+
+        // ================================================================
+        // 10. PAUSAR ANIMAÇÕES
+        // ================================================================
+        document.getElementById('btnPausarAnimacoes').addEventListener('click', function() {
+            document.body.classList.toggle('animacoes-pausadas');
+            this.classList.toggle('ativo');
+        });
+
+        // ================================================================
+        // 11. DALTONISMO
+        // ================================================================
+        document.getElementById('btnDaltonismoProtanopia').addEventListener('click', function() {
+            document.body.classList.remove('daltonismo-deuteranopia', 'daltonismo-tritanopia');
+            document.body.classList.toggle('daltonismo-protanopia');
+            this.classList.toggle('ativo');
+            document.getElementById('btnDaltonismoDeuteranopia').classList.remove('ativo');
+            document.getElementById('btnDaltonismoTritanopia').classList.remove('ativo');
+            document.getElementById('btnDaltonismoOff').classList.remove('ativo');
+        });
+
+        document.getElementById('btnDaltonismoDeuteranopia').addEventListener('click', function() {
+            document.body.classList.remove('daltonismo-protanopia', 'daltonismo-tritanopia');
+            document.body.classList.toggle('daltonismo-deuteranopia');
+            this.classList.toggle('ativo');
+            document.getElementById('btnDaltonismoProtanopia').classList.remove('ativo');
+            document.getElementById('btnDaltonismoTritanopia').classList.remove('ativo');
+            document.getElementById('btnDaltonismoOff').classList.remove('ativo');
+        });
+
+        document.getElementById('btnDaltonismoTritanopia').addEventListener('click', function() {
+            document.body.classList.remove('daltonismo-protanopia', 'daltonismo-deuteranopia');
+            document.body.classList.toggle('daltonismo-tritanopia');
+            this.classList.toggle('ativo');
+            document.getElementById('btnDaltonismoProtanopia').classList.remove('ativo');
+            document.getElementById('btnDaltonismoDeuteranopia').classList.remove('ativo');
+            document.getElementById('btnDaltonismoOff').classList.remove('ativo');
+        });
+
+        document.getElementById('btnDaltonismoOff').addEventListener('click', function() {
+            document.body.classList.remove('daltonismo-protanopia', 'daltonismo-deuteranopia', 'daltonismo-tritanopia');
+            document.getElementById('btnDaltonismoProtanopia').classList.remove('ativo');
+            document.getElementById('btnDaltonismoDeuteranopia').classList.remove('ativo');
+            document.getElementById('btnDaltonismoTritanopia').classList.remove('ativo');
+            this.classList.add('ativo');
+            setTimeout(() => this.classList.remove('ativo'), 300);
+        });
+
+        // ================================================================
+        // 12. RESETAR ACESSIBILIDADE
+        // ================================================================
+        document.getElementById('btnResetarAcessibilidade').addEventListener('click', function() {
+            document.body.className = '';
+            document.body.removeAttribute('style');
+
+            tamanhoFonte = 0;
+            aplicarTamanhoFonte();
+
+            nivelEspacamentoLetras = 0;
+            nivelEspacamentoLinhas = 0;
+            document.body.classList.remove('espacamento-letras-1', 'espacamento-letras-2', 'espacamento-letras-3',
+                'espacamento-linhas-1', 'espacamento-linhas-2', 'espacamento-linhas-3');
+
+            document.querySelectorAll('.painel-acessibilidade .grupo-botoes button').forEach(btn => {
+                btn.classList.remove('ativo');
+            });
+
+            document.getElementById('btnContraste').classList.remove('ativo');
+            document.getElementById('btnModoEscuro').classList.remove('ativo');
+            document.getElementById('btnDislexia').classList.remove('ativo');
+            document.getElementById('btnCursorGrande').classList.remove('ativo');
+            document.getElementById('btnBotoesMaiores').classList.remove('ativo');
+            document.getElementById('btnPausarAnimacoes').classList.remove('ativo');
+
+            document.getElementById('btnDaltonismoProtanopia').classList.remove('ativo');
+            document.getElementById('btnDaltonismoDeuteranopia').classList.remove('ativo');
+            document.getElementById('btnDaltonismoTritanopia').classList.remove('ativo');
+            document.getElementById('btnDaltonismoOff').classList.remove('ativo');
+
+            this.textContent = '✅ Resetado!';
+            this.style.background = '#27ae60';
+            setTimeout(() => {
+                this.textContent = '🔄 Resetar';
+                this.style.background = '#e74c3c';
+            }, 1000);
+
+            painel.classList.remove('aberto');
+            painelAberto = false;
+            btnAbrirPainel.innerHTML = '<i class="fa-solid fa-universal-access"></i>';
+
+            setTimeout(restaurarIcones, 50);
+        });
+
+        // ================================================================
+        // NAVEGAÇÃO POR TECLADO - ESC FECHA PAINEL
+        // ================================================================
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && painelAberto) {
+                painel.classList.remove('aberto');
+                painelAberto = false;
+                btnAbrirPainel.innerHTML = '<i class="fa-solid fa-universal-access"></i>';
+            }
+        });
+
+        console.log('✅ Todos os recursos de acessibilidade foram carregados!');
+    </script>
+
+</body>
+</html>

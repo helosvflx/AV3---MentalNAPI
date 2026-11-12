@@ -1,0 +1,689 @@
+{% extends "base.html" %}
+
+{% block titulo %}Contato - MentalNAPI{% endblock %}
+
+{% block nav_contato %}active{% endblock %}
+
+{% block conteudo %}
+
+<!-- ============================================ -->
+<!-- HERO SECTION -->
+<!-- ============================================ -->
+<div class="container">
+    <div class="hero-contato">
+        <h1>Entre em Contato</h1>
+        <div class="divider"></div>
+        <p>Estamos aqui para ajudar! Preencha o formulário ou entre em contato pelos canais abaixo.</p>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- GRID CONTATO -->
+    <!-- ============================================ -->
+    <div class="contato-grid">
+        <!-- INFORMAÇÕES DE CONTATO -->
+        <div class="info-contato">
+            <h2><i class="fas fa-info-circle"></i> Informações</h2>
+
+            <div class="info-item">
+                <i class="fas fa-phone"></i>
+                <div class="info-texto">
+                    <h4>Telefone</h4>
+                    <p><a href="tel:+5584999999999">(84) 99427-5307</a></p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <i class="fas fa-envelope"></i>
+                <div class="info-texto">
+                    <h4>E-mail</h4>
+                    <p><a href="mailto:contato@mentalnapi.com.br">contato@mentalnapi.com.br</a></p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <div class="info-texto">
+                    <h4>Endereço</h4>
+                    <p> NATAL -- Tv. Macaé, 2875 - Potengi, Natal - RN, 59110-185/
+                        MOSSORÓ -- R. Dr. João Marcelino, 867 - Nova Betânia, Mossoró 
+                    </p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <i class="fas fa-clock"></i>
+                <div class="info-texto">
+                    <h4>Horário de Atendimento</h4>
+                    <p>Segunda a Sexta: 8h às 20h<br>Sábado: 8h às 14h</p>
+                </div>
+            </div>
+
+            <div class="redes-sociais">
+                <h3>Siga-nos nas redes sociais</h3>
+                <div class="icones-redes">
+                    <a href="https://www.instagram.com" target="_blank" aria-label="Instagram">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+                    <a href="https://www.facebook.com" target="_blank" aria-label="Facebook">
+                        <i class="fa-brands fa-facebook"></i>
+                    </a>
+                    <a href="https://web.whatsapp.com" target="_blank" aria-label="WhatsApp">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </a>
+                    <a href="https://www.youtube.com" target="_blank" aria-label="YouTube">
+                        <i class="fa-brands fa-youtube"></i>
+                    </a>
+                    <a href="https://www.linkedin.com" target="_blank" aria-label="LinkedIn">
+                        <i class="fa-brands fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- FORMULÁRIO DE CONTATO -->
+        <div class="formulario-contato">
+            <h2><i class="fas fa-paper-plane"></i> Envie uma Mensagem</h2>
+            <form id="formContato" action="{{ url_for('enviar_contato') }}" method="POST">
+                <div class="form-group">
+                    <label for="nome"><i class="fas fa-user"></i> Nome Completo <span class="required">*</span></label>
+                    <input type="text" id="nome" name="nome" placeholder="Digite seu nome completo" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email"><i class="fas fa-envelope"></i> E-mail <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" placeholder="Digite seu e-mail" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="telefone"><i class="fas fa-phone"></i> Telefone</label>
+                    <input type="tel" id="telefone" name="telefone" placeholder="(84) 99999-9999">
+                </div>
+
+                <div class="form-group">
+                    <label for="assunto"><i class="fas fa-tag"></i> Assunto <span class="required">*</span></label>
+                    <select id="assunto" name="assunto" required>
+                        <option value="">Selecione um assunto</option>
+                        <option value="duvida">Dúvida</option>
+                        <option value="sugestao">Sugestão</option>
+                        <option value="reclamacao">Reclamação</option>
+                        <option value="elogio">Elogio</option>
+                        <option value="agendamento">Agendamento</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="mensagem"><i class="fas fa-comment"></i> Mensagem <span
+                            class="required">*</span></label>
+                    <textarea id="mensagem" name="mensagem" placeholder="Digite sua mensagem aqui..."
+                        required></textarea>
+                </div>
+
+                <button type="submit" class="btn-enviar">
+                    <i class="fas fa-paper-plane"></i> Enviar Mensagem
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block estilos_especificos %}
+<style>
+    /* ========== CONTAINER GERAL ========== */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    /* ========== HERO CONTATO ========== */
+    .hero-contato {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .hero-contato h1 {
+        font-size: 42px;
+        font-weight: 800;
+        color: #1a6b7a;
+        margin-bottom: 10px;
+    }
+
+    .hero-contato p {
+        font-size: 18px;
+        color: #5a7a8a;
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    .hero-contato .divider {
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(135deg, #7ecfc5 0%, #5bb8ae 100%);
+        margin: 20px auto;
+        border-radius: 4px;
+    }
+
+    /* ========== GRID ========== */
+    .contato-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    /* ========== INFORMAÇÕES DE CONTATO ========== */
+    .info-contato {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .info-contato:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .info-contato h2 {
+        font-size: 24px;
+        color: #1a6b7a;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .info-contato h2 i {
+        color: #5bb8ae;
+        font-size: 28px;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        margin-bottom: 25px;
+        padding: 15px;
+        border-radius: 12px;
+        background: #f5f9f8;
+        transition: background 0.3s;
+    }
+
+    .info-item:hover {
+        background: #d4ece8;
+    }
+
+    .info-item i {
+        font-size: 22px;
+        color: #5bb8ae;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        border-radius: 50%;
+        flex-shrink: 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .info-item .info-texto h4 {
+        font-size: 16px;
+        color: #1a2e3f;
+        margin-bottom: 4px;
+    }
+
+    .info-item .info-texto p {
+        font-size: 14px;
+        color: #5a7a8a;
+        margin: 0;
+    }
+
+    .info-item .info-texto a {
+        color: #5bb8ae;
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+    .info-item .info-texto a:hover {
+        color: #1a6b7a;
+        text-decoration: underline;
+    }
+
+    /* ========== REDES SOCIAIS ========== */
+    .redes-sociais {
+        margin-top: 30px;
+        padding-top: 25px;
+        border-top: 2px solid #d4ece8;
+    }
+
+    .redes-sociais h3 {
+        font-size: 18px;
+        color: #1a6b7a;
+        margin-bottom: 15px;
+    }
+
+    .redes-sociais .icones-redes {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .redes-sociais .icones-redes a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #f5f9f8;
+        color: #5bb8ae;
+        font-size: 22px;
+        transition: all 0.3s;
+        text-decoration: none;
+    }
+
+    .redes-sociais .icones-redes a:hover {
+        background: #5bb8ae;
+        color: white;
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 4px 15px rgba(91, 184, 174, 0.3);
+    }
+
+    /* ========== FORMULÁRIO ========== */
+    .formulario-contato {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .formulario-contato:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .formulario-contato h2 {
+        font-size: 24px;
+        color: #1a6b7a;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .formulario-contato h2 i {
+        color: #5bb8ae;
+        font-size: 28px;
+    }
+
+    .required {
+        color: #dc3545;
+        font-weight: 700;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        color: #1a2e3f;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .form-group label i {
+        color: #5bb8ae;
+        margin-right: 4px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #d4ece8;
+        border-radius: 12px;
+        font-size: 15px;
+        font-family: 'Inter', sans-serif;
+        transition: all 0.3s;
+        background: #fafafa;
+        color: #1a2e3f;
+        box-sizing: border-box;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #5bb8ae;
+        box-shadow: 0 0 0 4px rgba(91, 184, 174, 0.1);
+        background: white;
+    }
+
+    .form-group textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .btn-enviar {
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, #7ecfc5 0%, #5bb8ae 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .btn-enviar:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(91, 184, 174, 0.3);
+    }
+
+    .btn-enviar i {
+        font-size: 20px;
+    }
+
+    /* ========== RESPONSIVIDADE ========== */
+    @media (max-width: 900px) {
+        .contato-grid {
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .hero-contato h1 {
+            font-size: 32px;
+        }
+
+        .hero-contato p {
+            font-size: 16px;
+            padding: 0 20px;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .container {
+            padding: 20px 15px;
+        }
+
+        .info-contato,
+        .formulario-contato {
+            padding: 25px 20px;
+        }
+
+        .info-item {
+            padding: 12px;
+        }
+
+        .hero-contato h1 {
+            font-size: 28px;
+        }
+
+        .redes-sociais .icones-redes a {
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+        }
+    }
+
+    /* ========== MODO ESCURO ========== */
+    body.modo-escuro .hero-contato h1 {
+        color: #7ecfc5 !important;
+    }
+
+    body.modo-escuro .hero-contato p {
+        color: #b0b0b0 !important;
+    }
+
+    body.modo-escuro .hero-contato .divider {
+        background: linear-gradient(135deg, #4a9e8f 0%, #3a7a6f 100%) !important;
+    }
+
+    body.modo-escuro .info-contato {
+        background: #2a2a4a !important;
+        color: #e0e0e0 !important;
+    }
+
+    body.modo-escuro .info-contato h2 {
+        color: #7ecfc5 !important;
+    }
+
+    body.modo-escuro .info-item {
+        background: #3a3a5a !important;
+    }
+
+    body.modo-escuro .info-item .info-texto h4 {
+        color: #e0e0e0 !important;
+    }
+
+    body.modo-escuro .info-item .info-texto p {
+        color: #b0b0b0 !important;
+    }
+
+    body.modo-escuro .info-item i {
+        background: #2a2a4a !important;
+        color: #7ecfc5 !important;
+    }
+
+    body.modo-escuro .formulario-contato {
+        background: #2a2a4a !important;
+        color: #e0e0e0 !important;
+    }
+
+    body.modo-escuro .formulario-contato h2 {
+        color: #7ecfc5 !important;
+    }
+
+    body.modo-escuro .form-group label {
+        color: #e0e0e0 !important;
+    }
+
+    body.modo-escuro .form-group input,
+    body.modo-escuro .form-group textarea,
+    body.modo-escuro .form-group select {
+        background: #3a3a5a !important;
+        border-color: #4a4a6a !important;
+        color: #e0e0e0 !important;
+    }
+
+    body.modo-escuro .form-group input:focus,
+    body.modo-escuro .form-group textarea:focus,
+    body.modo-escuro .form-group select:focus {
+        border-color: #7ecfc5 !important;
+        background: #4a4a6a !important;
+    }
+
+    body.modo-escuro .redes-sociais {
+        border-top-color: #4a4a6a !important;
+    }
+
+    body.modo-escuro .redes-sociais h3 {
+        color: #7ecfc5 !important;
+    }
+
+    body.modo-escuro .redes-sociais .icones-redes a {
+        background: #3a3a5a !important;
+        color: #7ecfc5 !important;
+    }
+
+    body.modo-escuro .redes-sociais .icones-redes a:hover {
+        background: #7ecfc5 !important;
+        color: #1a1a2e !important;
+    }
+
+    body.modo-escuro .btn-enviar {
+        background: linear-gradient(135deg, #4a9e8f 0%, #3a7a6f 100%) !important;
+    }
+
+    /* ========== ALTO CONTRASTE ========== */
+    body.contraste .hero-contato h1 {
+        color: #ffff00 !important;
+    }
+
+    body.contraste .hero-contato p {
+        color: #ffffff !important;
+    }
+
+    body.contraste .hero-contato .divider {
+        background: #ffff00 !important;
+    }
+
+    body.contraste .info-contato {
+        background: #111111 !important;
+        border: 2px solid #ffff00 !important;
+        color: #ffffff !important;
+    }
+
+    body.contraste .info-contato h2 {
+        color: #ffff00 !important;
+    }
+
+    body.contraste .info-item {
+        background: #222222 !important;
+        border: 1px solid #ffff00 !important;
+    }
+
+    body.contraste .info-item .info-texto h4 {
+        color: #ffffff !important;
+    }
+
+    body.contraste .info-item .info-texto p {
+        color: #dddddd !important;
+    }
+
+    body.contraste .info-item i {
+        background: #111111 !important;
+        color: #ffff00 !important;
+        border: 1px solid #ffff00 !important;
+    }
+
+    body.contraste .formulario-contato {
+        background: #111111 !important;
+        border: 2px solid #ffff00 !important;
+        color: #ffffff !important;
+    }
+
+    body.contraste .formulario-contato h2 {
+        color: #ffff00 !important;
+    }
+
+    body.contraste .form-group label {
+        color: #ffffff !important;
+    }
+
+    body.contraste .form-group input,
+    body.contraste .form-group textarea,
+    body.contraste .form-group select {
+        background: #222222 !important;
+        border-color: #ffff00 !important;
+        color: #ffffff !important;
+    }
+
+    body.contraste .form-group input:focus,
+    body.contraste .form-group textarea:focus,
+    body.contraste .form-group select:focus {
+        border-color: #ffff00 !important;
+        background: #333333 !important;
+    }
+
+    body.contraste .redes-sociais {
+        border-top-color: #ffff00 !important;
+    }
+
+    body.contraste .redes-sociais h3 {
+        color: #ffff00 !important;
+    }
+
+    body.contraste .redes-sociais .icones-redes a {
+        background: #222222 !important;
+        color: #ffff00 !important;
+        border: 1px solid #ffff00 !important;
+    }
+
+    body.contraste .redes-sociais .icones-redes a:hover {
+        background: #ffff00 !important;
+        color: #000000 !important;
+    }
+
+    body.contraste .btn-enviar {
+        background: #ffff00 !important;
+        color: #000000 !important;
+    }
+
+    body.contraste .btn-enviar:hover {
+        background: #ffff00 !important;
+        color: #000000 !important;
+    }
+
+    /* ========== BOTÕES MAIORES ========== */
+    body.botoes-maiores .btn-enviar {
+        padding: 20px !important;
+        font-size: 22px !important;
+    }
+
+    body.botoes-maiores .form-group input,
+    body.botoes-maiores .form-group textarea,
+    body.botoes-maiores .form-group select {
+        padding: 16px 20px !important;
+        font-size: 18px !important;
+    }
+
+    body.botoes-maiores .form-group label {
+        font-size: 18px !important;
+    }
+
+    body.botoes-maiores .info-item .info-texto h4 {
+        font-size: 20px !important;
+    }
+
+    body.botoes-maiores .info-item .info-texto p {
+        font-size: 17px !important;
+    }
+
+    body.botoes-maiores .redes-sociais .icones-redes a {
+        width: 60px !important;
+        height: 60px !important;
+        font-size: 28px !important;
+    }
+</style>
+{% endblock %}
+
+{% block scripts_especificos %}
+<script>
+    document.getElementById('formContato').addEventListener('submit', function (e) {
+        const nome = document.getElementById('nome').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const assunto = document.getElementById('assunto').value;
+        const mensagem = document.getElementById('mensagem').value.trim();
+
+        if (!nome || !email || !assunto || !mensagem) {
+            e.preventDefault();
+            alert('Por favor, preencha todos os campos obrigatórios.');
+            return;
+        }
+
+        if (!email.includes('@') || !email.includes('.')) {
+            e.preventDefault();
+            alert('Por favor, digite um e-mail válido.');
+            return;
+        }
+    });
+</script>
+{% endblock %}
