@@ -1,0 +1,626 @@
+{% extends "base.html" %}
+
+{% block titulo %}Início{% endblock %}
+
+{% block nav_inicio %}active{% endblock %}
+
+{% block conteudo %}
+
+<!-- ============================================ -->
+<!-- TÍTULOS PRINCIPAIS - FRASE DE EFEITO -->
+<!-- ============================================ -->
+<div class="hero-section">
+    <div class="titulos-container">
+        <h1 class="preto">Sua saúde mental</h1>
+        <h1 class="azul">merece cuidado</h1>
+        <div class="linha-decorativa"></div>
+        <p class="subtitulo-hero">Cuidar da mente é o primeiro passo para uma vida plena</p>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- CARROSSEL -->
+<!-- ============================================ -->
+<div id="carouselExample" class="carrossel carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img src="static/EM-SENAC.jpg" class="d-block w-100" alt="Atendimento psicológico no Senac Natal - Profissionais acolhendo pacientes">
+        </div>
+        <div class="carousel-item">
+            <img src="static/PSI.jpeg" class="d-block w-100" alt="Equipe de psicólogos do NAPI em reunião">
+        </div>
+        <div class="carousel-item">
+            <img src="static/EM-MOSSORÓ.jpeg" class="d-block w-100" alt="Unidade do Senac Mossoró - Fachada do prédio">
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Anterior</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Próximo</span>
+    </button>
+</div>
+
+<!-- ============================================ -->
+<!-- SEÇÃO NAPI -->
+<!-- ============================================ -->
+<h2 class="section-title">O que é o <span>NAPI</span>?</h2>
+<p class="descricao-napi">
+    O NAPI é um núcleo de atendimento focado em oferecer suporte psicológico acessível,
+    promovendo o bem-estar e a qualidade de vida com profissionais qualificados.
+</p>
+
+<!-- ============================================ -->
+<!-- SEÇÃO PROFISSIONAIS -->
+<!-- ============================================ -->
+<h2 class="section-title">Nossos <span>Profissionais</span></h2>
+
+<div class="cards-profissionais">
+    <div class="card-item">
+        <div class="icone"><i class="fa-solid fa-user-graduate"></i></div>
+        <h3>Bárbara</h3>
+        <p>Psicopedagoga - Especialista em adolescentes. Atende no Senac Natal-ZN.</p>
+    </div>
+    <div class="card-item">
+        <div class="icone"><i class="fa-solid fa-user-graduate"></i></div>
+        <h3>Carol</h3>
+        <p>Psicopedagoga - Foco em inclusão escolar. Atende no Senac Natal-ZN.</p>
+    </div>
+    <div class="card-item">
+        <div class="icone"><i class="fa-solid fa-user-graduate"></i></div>
+        <h3>Evandilson</h3>
+        <p>Psicopedagogo - Acompanhamento de jovens. Atende no Senac Mossoró-RN.</p>
+    </div>
+    <div class="card-item">
+        <div class="icone"><i class="fa-solid fa-user-doctor"></i></div>
+        <h3>Yara</h3>
+        <p>Psicóloga - Saúde mental e bem-estar. Atende no Senac Mossoró-RN.</p>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SEÇÃO SERVIÇOS -->
+<!-- ============================================ -->
+<h2 class="section-title">O que <span>disponibilizamos</span>?</h2>
+
+<div class="cards">
+    <div class="card-item">
+        <div class="icone"><i class="fa-solid fa-user-doctor"></i></div>
+        <h3>Profissionais Qualificados</h3>
+        <p>Psicólogos experientes e especializados em diferentes áreas da saúde mental.</p>
+    </div>
+    <div class="card-item">
+        <div class="icone"><i class="fa-solid fa-calendar-check"></i></div>
+        <h3>Agendamento Fácil</h3>
+        <p>Escolha o melhor horário para você e marque sua consulta em poucos minutos.</p>
+    </div>
+    <div class="card-item">
+        <div class="icone"><i class="fa-solid fa-shield-halved"></i></div>
+        <h3>Privacidade Garantida</h3>
+        <p>Suas informações e consultas são protegidas com total segurança e confidencialidade.</p>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block estilos_especificos %}
+
+<style>
+
+/* ========== HERO SECTION - FRASE DE EFEITO ========== */
+.hero-section {
+    width: 100%;
+    min-height: 70vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 100px 20px 150px;
+    margin: 0;
+    position: relative;
+    background: linear-gradient(180deg, rgba(74, 158, 143, 0.05) 0%, transparent 100%);
+}
+
+/* Sombra decorativa atrás do texto */
+.hero-section::before {
+    content: '';
+    position: absolute;
+    width: 70%;
+    max-width: 800px;
+    height: 70%;
+    max-height: 500px;
+    background: radial-gradient(ellipse at center, rgba(74, 158, 143, 0.12) 0%, transparent 70%);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    filter: blur(50px);
+    animation: pulse-shadow 4s ease-in-out infinite;
+}
+
+@keyframes pulse-shadow {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.5;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.3);
+        opacity: 1;
+    }
+}
+
+/* Círculo decorativo */
+.hero-section::after {
+    content: '';
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border: 2px solid rgba(74, 158, 143, 0.08);
+    border-radius: 50%;
+    top: 12%;
+    right: 8%;
+    animation: float-circle 6s ease-in-out infinite;
+}
+
+@keyframes float-circle {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+        opacity: 0.3;
+    }
+    50% {
+        transform: translateY(-30px) scale(1.1);
+        opacity: 0.6;
+    }
+}
+
+.titulos-container {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.preto,
+.azul {
+    margin: 0;
+    text-align: center;
+    line-height: 1.1;
+    width: 100%;
+}
+
+.preto {
+    font-family: 'Inter', sans-serif;
+    color: #1a3a3f;
+    font-size: 85px;
+    font-weight: 800;
+    letter-spacing: -3px;
+    text-shadow: 0 4px 20px rgba(26, 58, 63, 0.08);
+    animation: fadeInDown 0.8s ease-out;
+    margin-bottom: 8px;
+}
+
+.azul {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #3a8a9c, #4a9e8f);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 70px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    position: relative;
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+    text-shadow: none;
+    margin-top: -8px;
+}
+
+/* Linha decorativa */
+.linha-decorativa {
+    width: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3a8a9c, #4a9e8f, #3a8a9c);
+    border-radius: 10px;
+    margin: 30px auto 20px;
+    animation: underline-grow 1.2s ease-out forwards;
+    animation-delay: 0.6s;
+}
+
+@keyframes underline-grow {
+    0% {
+        width: 0;
+        opacity: 0;
+    }
+    100% {
+        width: 140px;
+        opacity: 0.6;
+    }
+}
+
+.subtitulo-hero {
+    font-family: 'Inter', sans-serif;
+    color: #5a7a7f;
+    font-size: 20px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    margin: 15px 0 0;
+    opacity: 0;
+    animation: fadeIn 1s ease-out 1s forwards;
+    text-transform: uppercase;
+    position: relative;
+}
+
+/* Animações */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========== CARROSSEL ========== */
+.carrossel {
+    margin: 100px 50px 60px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0,0,0,.1);
+}
+
+.carrossel .carousel-item img {
+    width: 100%;
+    height: auto;
+    max-height: 500px;
+    object-fit: cover;
+}
+
+/* ========== SEÇÕES ========== */
+.section-title {
+    margin-top: 60px;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    color: #1a3a3f;
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #4a9e8f, transparent);
+    margin: 10px auto 0;
+    border-radius: 10px;
+}
+
+.section-title span {
+    color: #4a9e8f;
+    position: relative;
+}
+
+.section-title span::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #4a9e8f, transparent);
+    border-radius: 10px;
+}
+
+.descricao-napi {
+    text-align: center;
+    max-width: 700px;
+    margin: 8px auto 30px;
+    color: #5a6a6f;
+    line-height: 1.8;
+    font-weight: 500;
+    font-size: 18px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ========== CARDS ========== */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    padding: 0 8% 80px;
+    max-width: 1200px;
+    margin: 20px auto 0;
+    width: 100%;
+}
+
+.cards-profissionais {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    padding: 0 8% 80px;
+    max-width: 1200px;
+    margin: 20px auto 0;
+    width: 100%;
+}
+
+.cards-profissionais .card-item:last-child {
+    grid-column: 2/3;
+    justify-self: center;
+    width: 100%;
+    max-width: 350px;
+}
+
+.card-item {
+    background: white;
+    border-radius: 20px;
+    padding: 30px 20px;
+    text-align: center;
+    box-shadow: 0 8px 30px rgba(0,0,0,.06);
+    transition: all .4s ease;
+    border: 1px solid rgba(74,158,143,.1);
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #4a9e8f, #3a8a9c);
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+}
+
+.card-item:hover::before {
+    transform: scaleX(1);
+}
+
+.card-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 50px rgba(74,158,143,.15);
+    border-color: rgba(74,158,143,.2);
+}
+
+.card-item .icone {
+    font-size: 35px;
+    color: #4a9e8f;
+    margin-bottom: 15px;
+    transition: transform .3s;
+    display: inline-block;
+}
+
+.card-item:hover .icone {
+    transform: scale(1.1) rotate(-5deg);
+}
+
+.card-item h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #1a3a3f;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+}
+
+.card-item p {
+    color: #5a6a6f;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+    font-weight: 400;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ========== RESPONSIVIDADE ========== */
+@media (max-width: 1024px) {
+    .preto {
+        font-size: 65px;
+    }
+
+    .azul {
+        font-size: 52px;
+    }
+
+    .hero-section {
+        min-height: 70vh;
+        padding: 80px 20px 120px;
+    }
+
+    .carrossel {
+        margin: 80px 30px 50px;
+    }
+}
+
+@media (max-width: 900px) {
+    .hero-section {
+        min-height: 65vh;
+        padding: 70px 20px 100px;
+    }
+
+    .preto {
+        font-size: 55px;
+        letter-spacing: -2px;
+    }
+
+    .azul {
+        font-size: 45px;
+        letter-spacing: -1.5px;
+    }
+
+    .section-title {
+        font-size: 26px;
+    }
+
+    .carrossel {
+        margin: 70px 20px 40px;
+    }
+
+    .hero-section::after {
+        display: none;
+    }
+
+    .cards {
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .cards-profissionais {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cards-profissionais .card-item:last-child {
+        grid-column: 1/-1;
+        justify-self: center;
+        max-width: 350px;
+    }
+
+    .hero-section::before {
+        width: 80%;
+        height: 50%;
+    }
+
+    .linha-decorativa {
+        width: 100px;
+        margin: 25px auto 18px;
+    }
+
+    .subtitulo-hero {
+        font-size: 16px;
+        letter-spacing: 1px;
+    }
+
+    .carrossel {
+        margin: 60px 15px 35px;
+    }
+}
+
+@media (max-width: 600px) {
+    .hero-section {
+        min-height: 60vh;
+        padding: 60px 15px 80px;
+    }
+
+    .hero-section::before {
+        width: 90%;
+        height: 40%;
+        filter: blur(40px);
+    }
+
+    .preto {
+        font-size: 36px;
+        letter-spacing: -1px;
+        margin-bottom: 4px;
+    }
+
+    .azul {
+        font-size: 32px;
+        letter-spacing: -1px;
+        margin-top: -4px;
+    }
+
+    .linha-decorativa {
+        width: 80px;
+        height: 3px;
+        margin: 20px auto 15px;
+    }
+
+    .subtitulo-hero {
+        font-size: 13px;
+        letter-spacing: 0.5px;
+        margin-top: 8px;
+    }
+
+    .section-title {
+        font-size: 22px;
+        margin-top: 40px;
+    }
+
+    .section-title::after {
+        width: 40px;
+        height: 2px;
+    }
+
+    .descricao-napi {
+        font-size: 15px;
+        padding: 0 20px;
+        margin: 5px auto 20px;
+    }
+
+    .cards {
+        padding: 0 20px 50px;
+        gap: 20px;
+        margin-top: 5px;
+    }
+
+    .cards-profissionais {
+        grid-template-columns: 1fr;
+        padding: 0 20px 50px;
+        gap: 20px;
+    }
+
+    .cards-profissionais .card-item:last-child {
+        grid-column: 1;
+        max-width: 100%;
+    }
+
+    .card-item {
+        padding: 25px 15px;
+    }
+
+    .card-item h3 {
+        font-size: 16px;
+    }
+
+    .card-item p {
+        font-size: 13px;
+    }
+
+    .carrossel {
+        margin: 50px 10px 30px;
+        border-radius: 12px;
+    }
+
+    .hero-section::after {
+        display: none;
+    }
+}
+
+</style>
+
+{% endblock %}

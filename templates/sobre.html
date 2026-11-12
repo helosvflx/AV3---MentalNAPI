@@ -1,0 +1,624 @@
+{% extends "base.html" %}
+
+{% block titulo %}MentalNAPI - Sobre{% endblock %}
+
+{% block nav_sobre %}active{% endblock %}
+
+{% block estilos_especificos %}
+<style>
+    /* ========== HERO SECTION SOBRE ========== */
+    .hero-sobre {
+        width: 100%;
+        min-height: 70vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 100px 20px 180px;
+        margin: 0;
+        position: relative;
+        background: linear-gradient(180deg, rgba(74, 158, 143, 0.05) 0%, transparent 100%);
+    }
+
+    /* Sombra decorativa atrás do texto */
+    .hero-sobre::before {
+        content: '';
+        position: absolute;
+        width: 70%;
+        max-width: 800px;
+        height: 70%;
+        max-height: 500px;
+        background: radial-gradient(ellipse at center, rgba(74, 158, 143, 0.12) 0%, transparent 70%);
+        border-radius: 50%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        filter: blur(50px);
+        animation: pulse-shadow 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse-shadow {
+        0%, 100% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0.5;
+        }
+        50% {
+            transform: translate(-50%, -50%) scale(1.3);
+            opacity: 1;
+        }
+    }
+
+    /* Círculo decorativo */
+    .hero-sobre::after {
+        content: '';
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        border: 2px solid rgba(74, 158, 143, 0.08);
+        border-radius: 50%;
+        top: 12%;
+        right: 8%;
+        animation: float-circle 6s ease-in-out infinite;
+    }
+
+    @keyframes float-circle {
+        0%, 100% {
+            transform: translateY(0) scale(1);
+            opacity: 0.3;
+        }
+        50% {
+            transform: translateY(-30px) scale(1.1);
+            opacity: 0.6;
+        }
+    }
+
+    /* Segundo círculo decorativo menor */
+    .hero-sobre .circulo-menor {
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        border: 2px solid rgba(74, 158, 143, 0.06);
+        border-radius: 50%;
+        bottom: 15%;
+        left: 10%;
+        animation: float-circle 8s ease-in-out infinite reverse;
+        z-index: 1;
+    }
+
+    .titulos-sobre-container {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        max-width: 900px;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .titulo-sobre-preto,
+    .titulo-sobre-azul {
+        margin: 0;
+        text-align: center;
+        line-height: 1.1;
+        width: 100%;
+    }
+
+    .titulo-sobre-preto {
+        font-family: 'Inter', sans-serif;
+        color: #1a3a3f;
+        font-size: 85px;
+        font-weight: 800;
+        letter-spacing: -3px;
+        text-shadow: 0 4px 20px rgba(26, 58, 63, 0.08);
+        animation: fadeInDown 0.8s ease-out;
+        margin-bottom: 8px;
+    }
+
+    .titulo-sobre-azul {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #3a8a9c, #4a9e8f);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 70px;
+        font-weight: 800;
+        letter-spacing: -2px;
+        position: relative;
+        animation: fadeInUp 0.8s ease-out 0.2s both;
+        text-shadow: none;
+        margin-top: -8px;
+    }
+
+    /* Linha decorativa abaixo do título */
+    .linha-decorativa-sobre {
+        width: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #3a8a9c, #4a9e8f, #3a8a9c);
+        border-radius: 10px;
+        margin: 30px auto 0;
+        animation: underline-grow 1.2s ease-out forwards;
+        animation-delay: 0.6s;
+    }
+
+    @keyframes underline-grow {
+        0% {
+            width: 0;
+            opacity: 0;
+        }
+        100% {
+            width: 140px;
+            opacity: 0.6;
+        }
+    }
+
+    /* Animações */
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Efeito de brilho no título */
+    .titulo-sobre-azul::after {
+        content: '';
+        position: absolute;
+        top: -20%;
+        left: -10%;
+        width: 120%;
+        height: 140%;
+        background: radial-gradient(ellipse at center, rgba(74, 158, 143, 0.1) 0%, transparent 70%);
+        filter: blur(30px);
+        z-index: -1;
+        opacity: 0;
+        animation: glow-pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes glow-pulse {
+        0%, 100% {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+    }
+
+    /* ========== SEÇÃO TÍTULOS ========== */
+    .section-title {
+        margin-top: 30px;
+        text-align: center;
+        font-family: 'Inter', sans-serif;
+        color: #1a3a3f;
+        font-size: 32px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        position: relative;
+        padding-top: 10px;
+    }
+
+    .section-title::after {
+        content: '';
+        display: block;
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(90deg, #4a9e8f, transparent);
+        margin: 10px auto 0;
+        border-radius: 10px;
+    }
+
+    .section-title span {
+        color: #4a9e8f;
+        position: relative;
+    }
+
+    .section-subtitle {
+        text-align: center;
+        color: #5a7a7f;
+        font-size: 16px;
+        font-weight: 400;
+        margin-bottom: 30px;
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Espaçamento extra entre hero e conteúdo */
+    .espacamento-conteudo {
+        margin-top: 40px;
+    }
+
+    /* ========== CARDS ========== */
+    .cards-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 35px;
+        max-width: 1100px;
+        margin: 0 auto 40px;
+        width: 100%;
+        padding: 0 20px;
+    }
+
+    .card {
+        background: white;
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+        transition: all 0.4s ease;
+        border: 1px solid rgba(74, 158, 143, 0.1);
+    }
+
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 50px rgba(74, 158, 143, 0.15);
+    }
+
+    .card-img {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        border-radius: 12px;
+        margin-bottom: 18px;
+    }
+
+    .card h3 {
+        font-size: 22px;
+        margin-bottom: 10px;
+        color: #1a3a3f;
+        font-weight: 700;
+    }
+
+    .card p {
+        font-size: 15px;
+        color: #5a6a6f;
+        line-height: 1.8;
+        margin-bottom: 20px;
+    }
+
+    .card-btn {
+        background: linear-gradient(135deg, #6DB196 0%, #4a9e8f 100%);
+        color: white;
+        border: none;
+        padding: 12px 28px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .card-btn:hover {
+        transform: translateX(4px);
+        box-shadow: 0 4px 15px rgba(74, 158, 143, 0.3);
+        color: white;
+    }
+
+    /* ========== CARD SOBRE - INTEGRANTES ========== */
+    .card-sobre {
+        background: white;
+        border-radius: 20px;
+        padding: 40px 45px;
+        max-width: 700px;
+        margin: 0 auto 80px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+        border: 1px solid rgba(74, 158, 143, 0.1);
+        transition: all 0.4s ease;
+        width: 100%;
+    }
+
+    .card-sobre:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 50px rgba(74, 158, 143, 0.15);
+    }
+
+    .card-sobre h2 {
+        color: #1a3a3f;
+        font-size: 26px;
+        margin-bottom: 16px;
+        font-weight: 700;
+    }
+
+    .card-sobre h2 i {
+        color: #4a9e8f;
+        margin-right: 10px;
+    }
+
+    .card-sobre p {
+        color: #5a6a6f;
+        line-height: 1.9;
+        font-size: 15px;
+        margin-bottom: 20px;
+    }
+
+    .card-sobre h3 {
+        color: #1a3a3f;
+        font-size: 18px;
+        margin-bottom: 12px;
+        margin-top: 8px;
+        font-weight: 700;
+    }
+
+    .card-sobre ul {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 20px;
+    }
+
+    .card-sobre ul li {
+        color: #2a4a4f;
+        font-size: 15px;
+        background: #f0f7f5;
+        padding: 6px 18px;
+        border-radius: 20px;
+        display: inline-block;
+        border: 1px solid rgba(74, 158, 143, 0.15);
+        transition: all 0.3s ease;
+    }
+
+    .card-sobre ul li:hover {
+        transform: scale(1.05);
+        background: #e0f0ec;
+        border-color: #4a9e8f;
+    }
+
+    .card-sobre ul li::before {
+        content: "✦ ";
+        color: #4a9e8f;
+        font-weight: 700;
+    }
+
+    /* ========== RESPONSIVIDADE ========== */
+    @media (max-width: 1024px) {
+        .titulo-sobre-preto {
+            font-size: 65px;
+        }
+        .titulo-sobre-azul {
+            font-size: 52px;
+        }
+        .hero-sobre {
+            min-height: 70vh;
+            padding: 80px 20px 150px;
+        }
+        .hero-sobre .circulo-menor {
+            display: none;
+        }
+    }
+
+    @media (max-width: 900px) {
+        .hero-sobre {
+            min-height: 65vh;
+            padding: 70px 20px 120px;
+        }
+        .titulo-sobre-preto {
+            font-size: 55px;
+            letter-spacing: -2px;
+        }
+        .titulo-sobre-azul {
+            font-size: 45px;
+            letter-spacing: -1.5px;
+        }
+        .hero-sobre::after {
+            display: none;
+        }
+        .hero-sobre .circulo-menor {
+            display: none;
+        }
+        .cards-container {
+            padding: 0 15px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-sobre::before {
+            width: 80%;
+            height: 50%;
+        }
+        .cards-container {
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+        .card-sobre {
+            padding: 30px 24px;
+            margin: 0 15px 60px;
+        }
+        .card-sobre h2 {
+            font-size: 22px;
+        }
+        .cards-container {
+            padding: 0 15px;
+        }
+        .hero-sobre .circulo-menor {
+            display: none;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .hero-sobre {
+            min-height: 60vh;
+            padding: 60px 15px 100px;
+        }
+        .hero-sobre::before {
+            width: 90%;
+            height: 40%;
+            filter: blur(40px);
+        }
+        .titulo-sobre-preto {
+            font-size: 36px;
+            letter-spacing: -1px;
+            margin-bottom: 4px;
+        }
+        .titulo-sobre-azul {
+            font-size: 32px;
+            letter-spacing: -1px;
+            margin-top: -4px;
+        }
+        .linha-decorativa-sobre {
+            width: 80px;
+            height: 3px;
+            margin: 20px auto 0;
+        }
+        .section-title {
+            font-size: 22px;
+        }
+        .section-subtitle {
+            font-size: 14px;
+            padding: 0 15px;
+        }
+        .card {
+            padding: 18px;
+        }
+        .card h3 {
+            font-size: 18px;
+        }
+        .card p {
+            font-size: 14px;
+        }
+        .card-sobre {
+            padding: 24px 18px;
+            margin: 0 10px 50px;
+        }
+        .card-sobre h2 {
+            font-size: 19px;
+        }
+        .card-sobre p {
+            font-size: 14px;
+        }
+        .card-sobre ul li {
+            font-size: 13px;
+            padding: 4px 12px;
+        }
+        .hero-sobre::after {
+            display: none;
+        }
+        .hero-sobre .circulo-menor {
+            display: none;
+        }
+        .cards-container {
+            padding: 0 10px;
+        }
+        .espacamento-conteudo {
+            margin-top: 20px;
+        }
+    }
+
+    /* ========== MODO ESCURO ========== */
+    body.modo-escuro .titulo-sobre-preto { color: #ffffff !important; }
+    body.modo-escuro .titulo-sobre-azul { background: linear-gradient(135deg, #5bb8ae, #4a9e8f) !important; -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important; background-clip: text !important; }
+    body.modo-escuro .section-title { color: #ffffff !important; }
+    body.modo-escuro .section-title span { color: #5bb8ae !important; }
+    body.modo-escuro .section-subtitle { color: #bbbbbb !important; }
+    body.modo-escuro .card { background: #16213e !important; border-color: #2a3a5e !important; }
+    body.modo-escuro .card h3 { color: #ffffff !important; }
+    body.modo-escuro .card p { color: #bbbbbb !important; }
+    body.modo-escuro .card-sobre { background: #16213e !important; border-color: #2a3a5e !important; }
+    body.modo-escuro .card-sobre h2 { color: #ffffff !important; }
+    body.modo-escuro .card-sobre p { color: #bbbbbb !important; }
+    body.modo-escuro .card-sobre h3 { color: #ffffff !important; }
+    body.modo-escuro .card-sobre ul li { background: #1a2a4e !important; color: #cccccc !important; border-color: #2a3a5e !important; }
+    body.modo-escuro .card-sobre ul li::before { color: #5bb8ae !important; }
+    body.modo-escuro .linha-decorativa-sobre { background: linear-gradient(90deg, #5bb8ae, #4a9e8f, #5bb8ae) !important; }
+
+    /* ========== CONTRASTE ========== */
+    body.contraste .titulo-sobre-preto { color: #ffffff !important; }
+    body.contraste .titulo-sobre-azul { background: linear-gradient(135deg, #ffff00, #ffff00) !important; -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important; background-clip: text !important; }
+    body.contraste .section-title { color: #ffffff !important; }
+    body.contraste .section-title span { color: #ffff00 !important; }
+    body.contraste .section-subtitle { color: #dddddd !important; }
+    body.contraste .card { background: #1a1a1a !important; border: 2px solid #ffff00 !important; }
+    body.contraste .card h3 { color: #ffffff !important; }
+    body.contraste .card p { color: #cccccc !important; }
+    body.contraste .card-sobre { background: #1a1a1a !important; border: 2px solid #ffff00 !important; }
+    body.contraste .card-sobre h2 { color: #ffffff !important; }
+    body.contraste .card-sobre p { color: #cccccc !important; }
+    body.contraste .card-sobre h3 { color: #ffffff !important; }
+    body.contraste .card-sobre ul li { background: #2a2a2a !important; color: #ffffff !important; border-color: #ffff00 !important; }
+    body.contraste .card-sobre ul li::before { color: #ffff00 !important; }
+    body.contraste .linha-decorativa-sobre { background: linear-gradient(90deg, #ffff00, #ffff00, #ffff00) !important; }
+</style>
+{% endblock %}
+
+{% block conteudo %}
+<!-- ============================================ -->
+<!-- TÍTULOS PRINCIPAIS - SOBRE -->
+<!-- ============================================ -->
+<div class="hero-sobre">
+    <div class="circulo-menor"></div>
+    <div class="titulos-sobre-container">
+        <h1 class="titulo-sobre-preto">Sobre o</h1>
+        <h1 class="titulo-sobre-azul">MentalNAPI</h1>
+        <div class="linha-decorativa-sobre"></div>
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- SEÇÃO ONDE ATUAMOS -->
+<!-- ============================================ -->
+<div class="espacamento-conteudo">
+    <h2 class="section-title">Onde <span>atuamos</span></h2>
+    <p class="section-subtitle">Conheça nossas unidades e transforme seu futuro com a gente</p>
+</div>
+
+<div class="cards-container">
+    <!-- Card 1 - Natal -->
+    <article class="card">
+        <img class="card-img"
+            src="https://s2-g1.glbimg.com/B28XBZAn1LJp1P5ppFPkX3E-XNs=/0x0:2560x1511/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_59edd422c0c84a879bd37670ae4f538a/internal_photos/bs/2025/G/f/EXwbTvRbesmf20EXXaqg/whatsapp-image-2025-07-25-at-16.51.09.jpeg"
+            alt="Fachada do Senac Natal - Zona Norte">
+        <h3>Senac(RN) - Natal (ZN)</h3>
+        <p>Localizado na zona norte de Natal, oferece Ensino Médio Integrado ao Técnico em Informática para Internet, além do NAPI, espaço de inovação e tecnologia.</p>
+        <a href="https://www.google.com/maps/place/Senac+Zona+Norte/@-5.7592272,-35.2497544,15z" target="_blank" class="card-btn">
+            <i class="fas fa-map-marker-alt"></i> Acessar no maps
+        </a>
+    </article>
+
+    <!-- Card 2 - Mossoró -->
+    <article class="card">
+        <img class="card-img" src="https://api.rn.senac.br/api/Arquivo/Download/955" alt="Fachada do Senac Mossoró - Rio Grande do Norte">
+        <h3>Senac - Mossoró</h3>
+        <p>Oferece Ensino Médio Integrado ao Técnico em Informática para Internet, além de cursos técnicos nas áreas de Tecnologia, Gestão, Saúde, Beleza, Gastronomia e Idiomas.</p>
+        <a href="https://www.google.com/maps/search/?api=1&query=Senac+Mossoró+RN" target="_blank" class="card-btn">
+            <i class="fas fa-map-marker-alt"></i> Acessar no maps
+        </a>
+    </article>
+</div>
+
+<!-- CARD SOBRE - INTEGRANTES -->
+<div class="card-sobre">
+    <h2><i class="fas fa-users"></i> Sobre o Projeto</h2>
+    <p>
+        Este site foi desenvolvido por um grupo do projeto
+        <strong>Ensino Médio Tech – Senac Zona Norte</strong>,
+        como parte da conclusão do <strong>UC31 (Base 31)</strong>,
+        uma das etapas do curso. O projeto teve como objetivo colocar
+        em prática os conhecimentos adquiridos durante essa unidade. Com a Professora Gaby Cortez.
+    </p>
+
+    <h3><i class="fas fa-user-graduate"></i> Integrantes</h3>
+    <ul>
+        <li>Layane Raíssa</li>
+        <li>Guilherme Batista</li>
+        <li>Lívia Lima</li>
+        <li>Heloísa Felix</li>
+    </ul>
+</div>
+{% endblock %}
