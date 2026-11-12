@@ -1,0 +1,485 @@
+{% extends "base.html" %}
+
+{% block titulo %}Histórico - MentalNAPI{% endblock %}
+
+{% block nav_historico %}active{% endblock %}
+
+{% block conteudo %}
+
+<div class="container-historico">
+    <h1 class="page-title"><i class="fas fa-history"></i> Histórico</h1>
+    <p class="page-subtitle">Consulte seu histórico de agendamentos e conversas</p>
+
+    <!-- TABS -->
+    <div class="tabs-historico">
+        <button class="tab-btn active" data-tab="consultas" onclick="mostrarTab('consultas')">
+            <i class="fas fa-calendar-check"></i> Consultas
+        </button>
+        <button class="tab-btn" data-tab="chats" onclick="mostrarTab('chats')">
+            <i class="fas fa-comment-dots"></i> Histórico de Chats
+        </button>
+    </div>
+
+    <!-- TAB CONSULTAS -->
+    <div id="tab-consultas" class="tab-content active">
+        {% if consultas %}
+            <div class="consultas-lista">
+                {% for consulta in consultas %}
+                <div class="consulta-card status-{{ consulta.status|lower }}">
+                    <div class="consulta-header">
+                        <h3>{{ consulta.psicologa_nome }}</h3>
+                        <span class="consulta-status">{{ consulta.status }}</span>
+                    </div>
+                    <div class="consulta-detalhes">
+                        <span><i class="fas fa-calendar-day"></i> {{ consulta.data }}</span>
+                        <span><i class="fas fa-clock"></i> {{ consulta.horario }}h</span>
+                        <span><i class="fas fa-video"></i> {{ consulta.modalidade }}</span>
+                        <span><i class="fas fa-building"></i> {{ consulta.unidade }}</span>
+                    </div>
+                    {% if consulta.observacoes %}
+                    <p class="consulta-obs"><i class="fas fa-comment"></i> {{ consulta.observacoes }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="vazio">
+                <i class="fas fa-calendar-times"></i>
+                <p>Nenhuma consulta no histórico.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- TAB CHATS -->
+    <div id="tab-chats" class="tab-content">
+        {% if chats %}
+            <div class="chats-lista">
+                {% for chat in chats %}
+                <div class="chat-card" onclick="window.location.href='{{ url_for('chat', psicologa_id=chat.psicologa_id) }}'">
+                    <div class="chat-avatar">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <div class="chat-info">
+                        <h4>{{ chat.psicologa_nome }}</h4>
+                        <p class="chat-meta">
+                            <i class="fas fa-comment"></i> {{ chat.total_mensagens }} mensagens
+                            <span class="chat-data"><i class="fas fa-clock"></i> {{ chat.ultima_mensagem|replace(' ', ' - ') }}</span>
+                        </p>
+                    </div>
+                    <div class="chat-arrow">
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="vazio">
+                <i class="fas fa-comment-slash"></i>
+                <p>Você ainda não tem histórico de chats.</p>
+                <a href="{{ url_for('chats') }}" class="btn-iniciar-chat">
+                    <i class="fas fa-comment-dots"></i> Iniciar um chat
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block estilos_especificos %}
+<style>
+/* ========== CONTAINER PRINCIPAL ========== */
+.container-historico {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.page-title {
+    font-size: 36px;
+    font-weight: 800;
+    color: #1a3a3f;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.page-title i {
+    color: #4a9e8f;
+}
+
+.page-subtitle {
+    text-align: center;
+    color: #5a7a7f;
+    font-size: 16px;
+    margin-bottom: 40px;
+}
+
+/* ========== TABS ========== */
+.tabs-historico {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.tab-btn {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 30px;
+    background: #f0f7f5;
+    color: #5a7a7f;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+    background: #d4ece8;
+    transform: translateY(-2px);
+}
+
+.tab-btn.active {
+    background: linear-gradient(135deg, #7ecfc5 0%, #5bb8ae 100%);
+    color: white;
+}
+
+.tab-btn i {
+    margin-right: 8px;
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ========== CONSULTAS ========== */
+.consultas-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.consulta-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px 25px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    border: 1px solid rgba(74, 158, 143, 0.1);
+    transition: all 0.3s ease;
+}
+
+.consulta-card:hover {
+    transform: translateX(5px);
+}
+
+.consulta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.consulta-header h3 {
+    font-size: 18px;
+    color: #1a3a3f;
+    margin: 0;
+}
+
+.consulta-status {
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.status-agendado .consulta-status {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-cancelado .consulta-status {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.status-concluído .consulta-status {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.consulta-detalhes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.consulta-detalhes span {
+    font-size: 14px;
+    color: #5a7a7f;
+    background: #f5f9f8;
+    padding: 3px 14px;
+    border-radius: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.consulta-detalhes span i {
+    color: #4a9e8f;
+}
+
+.consulta-obs {
+    font-size: 14px;
+    color: #5a7a7f;
+    margin: 8px 0 0 0;
+    padding: 8px 14px;
+    background: #f5f9f8;
+    border-radius: 8px;
+}
+
+.consulta-obs i {
+    color: #4a9e8f;
+    margin-right: 6px;
+}
+
+/* ========== CHATS ========== */
+.chats-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.chat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 18px 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    border: 1px solid rgba(74, 158, 143, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.chat-card:hover {
+    transform: translateX(5px);
+    box-shadow: 0 8px 30px rgba(74, 158, 143, 0.12);
+}
+
+.chat-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7ecfc5 0%, #5bb8ae 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.chat-info {
+    flex: 1;
+}
+
+.chat-info h4 {
+    font-size: 17px;
+    color: #1a3a3f;
+    margin: 0 0 4px 0;
+}
+
+.chat-meta {
+    font-size: 13px;
+    color: #5a7a7f;
+    margin: 0;
+}
+
+.chat-meta i {
+    color: #4a9e8f;
+}
+
+.chat-data {
+    margin-left: 12px;
+}
+
+.chat-arrow {
+    color: #d4ece8;
+    font-size: 18px;
+    transition: all 0.3s ease;
+}
+
+.chat-card:hover .chat-arrow {
+    color: #4a9e8f;
+    transform: translateX(4px);
+}
+
+/* ========== VAZIO ========== */
+.vazio {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 20px;
+    border: 1px solid rgba(74, 158, 143, 0.1);
+}
+
+.vazio i {
+    font-size: 50px;
+    color: #d4ece8;
+    margin-bottom: 15px;
+}
+
+.vazio p {
+    font-size: 16px;
+    color: #5a7a7f;
+    margin-bottom: 20px;
+}
+
+.btn-iniciar-chat {
+    display: inline-block;
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #7ecfc5 0%, #5bb8ae 100%);
+    color: white;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-iniciar-chat:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(91, 184, 174, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-iniciar-chat i {
+    margin-right: 8px;
+    color: white;
+}
+
+/* ========== RESPONSIVIDADE ========== */
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 28px;
+    }
+
+    .tabs-historico {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .tab-btn {
+        width: 100%;
+        max-width: 300px;
+        text-align: center;
+    }
+
+    .consulta-card {
+        padding: 16px 18px;
+    }
+
+    .consulta-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .consulta-detalhes {
+        gap: 6px;
+    }
+
+    .consulta-detalhes span {
+        font-size: 13px;
+        padding: 3px 10px;
+    }
+
+    .chat-card {
+        padding: 14px 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .consulta-detalhes span {
+        font-size: 12px;
+        padding: 2px 8px;
+    }
+
+    .chat-card {
+        flex-wrap: wrap;
+    }
+
+    .chat-arrow {
+        display: none;
+    }
+}
+
+/* ========== MODO ESCURO ========== */
+body.modo-escuro .page-title { color: #ffffff !important; }
+body.modo-escuro .page-subtitle { color: #bbbbbb !important; }
+body.modo-escuro .tab-btn { background: #3a3a5a !important; color: #bbbbbb !important; }
+body.modo-escuro .tab-btn.active { background: linear-gradient(135deg, #4a9e8f 0%, #3a7a6f 100%) !important; color: white !important; }
+body.modo-escuro .consulta-card { background: #2a2a4a !important; border-color: #4a4a6a !important; }
+body.modo-escuro .consulta-header h3 { color: #ffffff !important; }
+body.modo-escuro .consulta-detalhes span { background: #3a3a5a !important; color: #bbbbbb !important; }
+body.modo-escuro .consulta-detalhes span i { color: #7ecfc5 !important; }
+body.modo-escuro .consulta-obs { background: #3a3a5a !important; color: #bbbbbb !important; }
+body.modo-escuro .chat-card { background: #2a2a4a !important; border-color: #4a4a6a !important; }
+body.modo-escuro .chat-info h4 { color: #ffffff !important; }
+body.modo-escuro .chat-meta { color: #bbbbbb !important; }
+body.modo-escuro .chat-arrow { color: #4a4a6a !important; }
+body.modo-escuro .chat-card:hover .chat-arrow { color: #7ecfc5 !important; }
+body.modo-escuro .vazio { background: #2a2a4a !important; border-color: #4a4a6a !important; }
+body.modo-escuro .vazio p { color: #bbbbbb !important; }
+
+/* ========== CONTRASTE ========== */
+body.contraste .page-title { color: #ffffff !important; }
+body.contraste .page-subtitle { color: #dddddd !important; }
+body.contraste .tab-btn { background: #1a1a1a !important; color: #ffffff !important; border: 1px solid #ffff00 !important; }
+body.contraste .tab-btn.active { background: #ffff00 !important; color: #000000 !important; border-color: #ffff00 !important; }
+body.contraste .consulta-card { background: #1a1a1a !important; border: 1px solid #ffff00 !important; }
+body.contraste .consulta-header h3 { color: #ffffff !important; }
+body.contraste .consulta-detalhes span { background: #2a2a2a !important; color: #ffffff !important; border: 1px solid #ffff00 !important; }
+body.contraste .consulta-detalhes span i { color: #ffff00 !important; }
+body.contraste .consulta-obs { background: #2a2a2a !important; color: #ffffff !important; border: 1px solid #ffff00 !important; }
+body.contraste .chat-card { background: #1a1a1a !important; border: 1px solid #ffff00 !important; }
+body.contraste .chat-info h4 { color: #ffffff !important; }
+body.contraste .chat-meta { color: #dddddd !important; }
+body.contraste .chat-arrow { color: #ffff00 !important; }
+body.contraste .vazio { background: #1a1a1a !important; border: 2px solid #ffff00 !important; }
+body.contraste .vazio p { color: #dddddd !important; }
+</style>
+{% endblock %}
+
+{% block scripts_especificos %}
+<script>
+function mostrarTab(tabId) {
+    // Esconde todas as tabs
+    document.querySelectorAll('.tab-content').forEach(el => {
+        el.classList.remove('active');
+    });
+    
+    // Remove active de todos os botões
+    document.querySelectorAll('.tab-btn').forEach(el => {
+        el.classList.remove('active');
+    });
+    
+    // Mostra a tab selecionada
+    document.getElementById('tab-' + tabId).classList.add('active');
+    
+    // Ativa o botão correspondente
+    document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+}
+</script>
+{% endblock %}

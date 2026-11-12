@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+
+{% block titulo %}Conversa com {{ psicologa.nome }} - MentalNAPI{% endblock %}
+{% block nav_chats %}active{% endblock %}
+
+{% block conteudo %}
+<div class="container-conversa">
+
+  <a href="{{ url_for('chats.chats') }}" class="btn-voltar">
+    <i class="fas fa-arrow-left" aria-hidden="true"></i> Voltar aos chats
+  </a>
+
+  <div class="conversa-layout">
+    <!-- CABEÇALHO DA CONVERSA -->
+    <header class="conversa-header">
+      <div class="conversa-avatar" aria-hidden="true">
+        <i class="fas fa-user-md"></i>
+      </div>
+      <div>
+        <h2>{{ psicologa.nome }}</h2>
+        <span class="conversa-especialidade">{{ psicologa.especialidade }}</span>
+      </div>
+    </header>
+
+    {% if agendamento %}
+      <div class="conversa-agendamento">
+        <i class="fas fa-calendar-check" aria-hidden="true"></i>
+        Próxima consulta: <strong>{{ agendamento.data.strftime('%d/%m/%Y') }}</strong>
+        às <strong>{{ agendamento.horario }}h</strong> — {{ agendamento.modalidade }}
+      </div>
+    {% endif %}
+
+    <!-- MENSAGENS -->
+    <div class="conversa-mensagens" id="mensagens" aria-live="polite">
+      {% if mensagens %}
+        {% for m in mensagens %}
+          <div class="msg msg-{{ m.remetente }}">
+            <div class="msg-bolha">{{ m.conteudo }}</div>
+            <span class="msg-hora">{{ m.criada_em.strftime('%H:%M') }}</span>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p class="conversa-vazia">Nenhuma mensagem ainda. Diga olá 👋</p>
+      {% endif %}
+    </div>
+
+    <!-- INPUT -->
+    <form id="form-msg" class="conversa-input" data-url="{{ url_for('chats.enviar_mensagem', psicologa_id=psicologa.id) }}">
+      <label for="texto" class="sr-only">Escreva sua mensagem</label>
+      <textarea id="texto" name="texto" rows="1" placeholder="Escreva sua mensagem..." required></textarea>
+      <button type="submit" aria-label="Enviar mensagem">
+        <i class="fas fa-paper-plane" aria-hidden="true"></i>
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block estilos_especificos %}
+<style>
+.container-conversa { max-width: 820px; margin: 24px auto; padding: 0 20px 40px; }
+
+.btn-voltar {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--c-primary, #4a9e8f);
+  text-decoration: none;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.btn-voltar:hover { text-decoration: underline; }
+
+.conversa-layout {
+  background: var(--c-bg, #fff);
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 200px);
+  min-height: 480px;
+}
+
+.conversa-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 22px;
+  border-bottom: 1px solid rgba(74,158,143,0.12);
+}
+.conversa-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: linear-gradient(135deg, #7ecfc5, #5bb8ae);
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+.conversa-header h2 { margin: 0; font-size: 17px; color: #1a3a3f; }
+.conversa-especialidade { font-size: 13px; color: #5a7a7f; }
+
+.conversa-agendamento {
+  padding: 10px 22px;
+  background: #f0f7f5;
+  font-size: 13px;
+  color: #5a7a7f;
+}
+.conversa-agendamento i { color: #4a9e8f; margin-right: 6px; }
+
+.conversa-mensagens {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #fbfdfc;
+}
+
+.msg { display: flex; flex-direction: column; max-width: 72%; }
+.msg-paciente { align-self: flex-end; align-items: flex-end; }
+.msg-psicologa { align-self: flex-start; align-items: flex-start; }
+
+.msg-bolha {
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+.msg-paciente .msg-bolha {
+  background: linear-gradient(135deg, #7ecfc5, #5bb8ae);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+.msg-psicologa .msg-bolha {
+  background: #eef5f3;
+  color: #1a3a3f;
+  border-bottom-left-radius: 4px;
+}
+.msg-hora { font-size: 11px; color: #8aa8a4; margin-top: 2px; }
+
+.conversa-vazia {
+  text-align: center; color: #8aa8a4;
+  margin: auto; font-size: 14px;
+}
+
+.conversa-input {
+  display: flex; gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid rgba(74,158,143,0.12);
+  background: #fff;
+}
+.conversa-input textarea {
+  flex: 1;
+  border: 1.5px solid #d4ece8;
+  border-radius: 22px;
+  padding: 10px 16px;
+  resize: none;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+  max-height: 120px;
+}
+.conversa-input textarea:focus { border-color: #5bb8ae; }
+
+.conversa-input button {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #7ecfc5, #5bb8ae);
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  transition: transform 0.2s;
+}
+.conversa-input button:hover { transform: scale(1.05); }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+/* Modo escuro */
+body.modo-escuro .conversa-layout { background: #2a2a4a; }
+body.modo-escuro .conversa-header { border-color: #4a4a6a; }
+body.modo-escuro .conversa-header h2 { color: #fff; }
+body.modo-escuro .conversa-especialidade { color: #bbb; }
+body.modo-escuro .conversa-agendamento { background: #22223a; color: #bbb; }
+body.modo-escuro .conversa-mensagens { background: #22223a; }
+body.modo-escuro .msg-psicologa .msg-bolha { background: #3a3a5a; color: #eee; }
+body.modo-escuro .conversa-input { background: #2a2a4a; border-color: #4a4a6a; }
+body.modo-escuro .conversa-input textarea {
+  background: #22223a; color: #fff; border-color: #4a4a6a;
+}
+
+/* Alto contraste */
+body.contraste .conversa-layout { background: #1a1a1a; border: 2px solid #ffff00; }
+body.contraste .conversa-header { border-color: #ffff00; }
+body.contraste .conversa-header h2 { color: #fff; }
+body.contraste .conversa-mensagens { background: #111; }
+body.contraste .msg-psicologa .msg-bolha { background: #2a2a2a; color: #fff; border: 1px solid #ffff00; }
+body.contraste .msg-paciente .msg-bolha { background: #ffff00; color: #000; }
+body.contraste .conversa-input textarea { background: #111; color: #fff; border-color: #ffff00; }
+body.contraste .conversa-input button { background: #ffff00; color: #000; }
+</style>
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+(function () {
+  const form = document.getElementById('form-msg');
+  const ta = document.getElementById('texto');
+  const box = document.getElementById('mensagens');
+
+  // Auto-grow textarea
+  ta.addEventListener('input', () => {
+    ta.style.height = 'auto';
+    ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
+  });
+
+  // Enviar com Enter (Shift+Enter = quebra de linha)
+  ta.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      form.requestSubmit();
+    }
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const texto = ta.value.trim();
+    if (!texto) return;
+
+    const fd = new FormData();
+    fd.append('texto', texto);
+
+    try {
+      const r = await fetch(form.dataset.url, { method: 'POST', body: fd });
+      if (!r.ok) throw new Error('Falha no envio');
+      const data = await r.json();
+
+      const vazio = box.querySelector('.conversa-vazia');
+      if (vazio) vazio.remove();
+
+      const wrap = document.createElement('div');
+      wrap.className = 'msg msg-paciente';
+      wrap.innerHTML = `
+        <div class="msg-bolha"></div>
+        <span class="msg-hora">${data.hora}</span>
+      `;
+      wrap.querySelector('.msg-bolha').textContent = data.texto;
+      box.appendChild(wrap);
+      box.scrollTop = box.scrollHeight;
+
+      ta.value = '';
+      ta.style.height = 'auto';
+      ta.focus();
+    } catch (err) {
+      alert('Não foi possível enviar. Tente novamente.');
+    }
+  });
+
+  // Scroll inicial para o fim
+  box.scrollTop = box.scrollHeight;
+})();
+</script>
+{% endblock %}

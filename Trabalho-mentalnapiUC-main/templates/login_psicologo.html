@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Profissional - MentalNapi</title>
+  <style>
+    body{font-family:Arial;background:#f5f9f8;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}
+    .box{background:#fff;padding:40px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.08);width:340px}
+    h2{color:#1a3a3f;text-align:center}
+    input{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:8px;box-sizing:border-box}
+    button{width:100%;padding:12px;background:#4a9e8f;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:16px}
+    button:hover{background:#3a8a7a}
+    .msg{padding:8px;border-radius:6px;margin-bottom:10px;font-size:14px}
+    .danger{background:#fde8e8;color:#c00}
+    .success{background:#e8f5e9;color:#2e7d32}
+    .warning{background:#fff3cd;color:#856404}
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Área do Profissional</h2>
+
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+      {% for cat, m in msgs %}
+        <div class="msg {{ cat }}">{{ m }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('login_psicologo') }}">
+      <input type="text" name="username" placeholder="Usuário" required>
+      <input type="password" name="password" placeholder="Senha" required>
+      <button type="submit">Entrar</button>
+    </form>
+  </div>
+</body>
+</html>

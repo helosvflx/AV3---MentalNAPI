@@ -1,0 +1,721 @@
+{% extends "base.html" %}
+
+{% block titulo %}Chats - MentalNAPI{% endblock %}
+
+{% block nav_chats %}active{% endblock %}
+
+{% block conteudo %}
+
+<div class="container-chats">
+    <h1 class="page-title"><i class="fas fa-comment-dots"></i> Chats</h1>
+    <p class="page-subtitle">Converse com os profissionais disponíveis na sua unidade</p>
+
+    <!-- ========== BARRA LATERAL COM CHATS ========== -->
+    <div class="chats-layout">
+        <!-- Barra lateral com lista de chats -->
+        <aside class="chats-sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-comments"></i> Conversas</h3>
+                <span class="total-chats">{{ psicologas|length }}</span>
+            </div>
+            
+            <div class="chat-list">
+                {% if psicologas %}
+                    {% for psicologa in psicologas %}
+                    <a href="{{ url_for('chat', psicologa_id=psicologa.id) }}" class="chat-item {% if psicologa.id in chat_psicologas %}has-messages{% endif %}">
+                        <div class="chat-item-avatar">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <div class="chat-item-info">
+                            <span class="chat-item-nome">{{ psicologa.nome }}</span>
+                            <span class="chat-item-status">
+                                {% if psicologa.id in chat_psicologas %}
+                                    <i class="fas fa-circle online"></i> Online
+                                {% else %}
+                                    <i class="fas fa-circle offline"></i> Disponível
+                                {% endif %}
+                            </span>
+                        </div>
+                        {% if psicologa.id in chat_psicologas %}
+                            <span class="chat-badge">●</span>
+                        {% endif %}
+                    </a>
+                    {% endfor %}
+                {% else %}
+                    <div class="sem-chats">
+                        <i class="fas fa-user-slash"></i>
+                        <p>Não há ninguém disponível no momento</p>
+                    </div>
+                {% endif %}
+            </div>
+        </aside>
+
+        <!-- Área principal - informações do agendamento -->
+        <main class="chat-main">
+            {% if psicologas %}
+                <!-- Pega a primeira psicóloga da lista para mostrar as informações -->
+                {% set primeira_psicologa = psicologas[0] %}
+                {% set agendamento = agendamentos.get(primeira_psicologa.id) %}
+                
+                <div class="chat-info-container">
+                    <div class="chat-info-header">
+                        <div class="chat-info-avatar">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <div class="chat-info-title">
+                            <h3>{{ primeira_psicologa.nome }}</h3>
+                            <span class="chat-info-especialidade">{{ primeira_psicologa.especialidade }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-info-detalhes">
+                        <h4><i class="fas fa-calendar-check"></i> Detalhes do Agendamento</h4>
+                        
+                        {% if agendamento %}
+                        <div class="detalhes-grid">
+                            <div class="detalhe-item">
+                                <span class="detalhe-label"><i class="fas fa-calendar-day"></i> Data</span>
+                                <span class="detalhe-valor">{{ agendamento.data }}</span>
+                            </div>
+                            <div class="detalhe-item">
+                                <span class="detalhe-label"><i class="fas fa-clock"></i> Horário</span>
+                                <span class="detalhe-valor">{{ agendamento.horario }}h</span>
+                            </div>
+                            <div class="detalhe-item">
+                                <span class="detalhe-label"><i class="fas fa-video"></i> Modalidade</span>
+                                <span class="detalhe-valor">{{ agendamento.modalidade }}</span>
+                            </div>
+                            <div class="detalhe-item">
+                                <span class="detalhe-label"><i class="fas fa-circle"></i> Status</span>
+                                <span class="detalhe-valor status-ativo">{{ agendamento.status }}</span>
+                            </div>
+                        </div>
+                        {% if agendamento.observacoes %}
+                        <div class="detalhe-obs">
+                            <span class="detalhe-label"><i class="fas fa-comment"></i> Observações</span>
+                            <p>{{ agendamento.observacoes }}</p>
+                        </div>
+                        {% endif %}
+                        {% else %}
+                        <div class="sem-agendamento-info">
+                            <i class="fas fa-calendar-times"></i>
+                            <p>Nenhum agendamento encontrado para esta psicóloga.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="chat-info-actions">
+                        <a href="{{ url_for('chat', psicologa_id=primeira_psicologa.id) }}" class="btn-iniciar-conversa">
+                            <i class="fas fa-comment-dots"></i> Iniciar Conversa
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="chat-placeholder">
+                    <i class="fas fa-calendar-times"></i>
+                    <h3>Sem agendamentos online</h3>
+                    <p>Você ainda não possui agendamentos. Agende uma consulta para poder conversar com nossos profissionais.</p>
+                    <a href="{{ url_for('unidades') }}" class="btn-agendar-chat">
+                        <i class="fas fa-calendar-plus"></i> Agendar agora
+                    </a>
+                </div>
+            {% endif %}
+        </main>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block estilos_especificos %}
+<style>
+/* ========== CONTAINER PRINCIPAL ========== */
+.container-chats {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.page-title {
+    font-size: 36px;
+    font-weight: 800;
+    color: #1a3a3f;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.page-title i {
+    color: #4a9e8f;
+}
+
+.page-subtitle {
+    text-align: center;
+    color: #5a7a7f;
+    font-size: 16px;
+    margin-bottom: 40px;
+}
+
+/* ========== LAYOUT COM BARRA LATERAL ========== */
+.chats-layout {
+    display: flex;
+    gap: 30px;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+    border: 1px solid rgba(74, 158, 143, 0.1);
+    min-height: 500px;
+}
+
+/* ========== BARRA LATERAL ========== */
+.chats-sidebar {
+    width: 320px;
+    min-width: 320px;
+    background: #f8fbfa;
+    border-right: 1px solid rgba(74, 158, 143, 0.1);
+    display: flex;
+    flex-direction: column;
+    max-height: 600px;
+}
+
+.sidebar-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(74, 158, 143, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+}
+
+.sidebar-header h3 {
+    font-size: 16px;
+    color: #1a3a3f;
+    margin: 0;
+    font-weight: 700;
+}
+
+.sidebar-header h3 i {
+    color: #4a9e8f;
+    margin-right: 8px;
+}
+
+.total-chats {
+    background: #d4ece8;
+    color: #4a9e8f;
+    padding: 2px 12px;
+    border-radius: 15px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* ========== LISTA DE CHATS ========== */
+.chat-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.chat-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.chat-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-list::-webkit-scrollbar-thumb {
+    background: #d4ece8;
+    border-radius: 10px;
+}
+
+.chat-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    margin-bottom: 4px;
+}
+
+.chat-item:hover {
+    background: #d4ece8;
+    transform: translateX(4px);
+}
+
+.chat-item.has-messages {
+    background: #f0f7f5;
+}
+
+.chat-item.has-messages:hover {
+    background: #d4ece8;
+}
+
+.chat-item-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7ecfc5 0%, #5bb8ae 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.chat-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.chat-item-nome {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a3a3f;
+    margin-bottom: 2px;
+}
+
+.chat-item-status {
+    font-size: 12px;
+    color: #5a7a7f;
+}
+
+.chat-item-status .online {
+    color: #28a745;
+    font-size: 8px;
+    margin-right: 4px;
+}
+
+.chat-item-status .offline {
+    color: #6c757d;
+    font-size: 8px;
+    margin-right: 4px;
+}
+
+.chat-badge {
+    color: #4a9e8f;
+    font-size: 8px;
+    animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* ========== SEM CHATS NA SIDEBAR ========== */
+.sem-chats {
+    text-align: center;
+    padding: 50px 20px;
+    color: #5a7a7f;
+}
+
+.sem-chats i {
+    font-size: 45px;
+    color: #d4ece8;
+    margin-bottom: 15px;
+}
+
+.sem-chats p {
+    font-size: 14px;
+    margin: 0;
+    font-weight: 500;
+    color: #5a7a7f;
+    line-height: 1.5;
+}
+
+/* ========== ÁREA PRINCIPAL - INFO DO AGENDAMENTO ========== */
+.chat-main {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 30px;
+    background: white;
+    overflow-y: auto;
+}
+
+.chat-info-container {
+    width: 100%;
+    max-width: 500px;
+}
+
+.chat-info-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f7f5;
+}
+
+.chat-info-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7ecfc5 0%, #5bb8ae 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 28px;
+    flex-shrink: 0;
+}
+
+.chat-info-title h3 {
+    font-size: 20px;
+    color: #1a3a3f;
+    margin: 0;
+}
+
+.chat-info-especialidade {
+    font-size: 14px;
+    color: #5a7a7f;
+}
+
+.chat-info-detalhes {
+    background: #f8fbfa;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.chat-info-detalhes h4 {
+    font-size: 16px;
+    color: #1a3a3f;
+    margin: 0 0 15px 0;
+}
+
+.chat-info-detalhes h4 i {
+    color: #4a9e8f;
+    margin-right: 8px;
+}
+
+.detalhes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.detalhe-item {
+    background: white;
+    border-radius: 10px;
+    padding: 12px 14px;
+}
+
+.detalhe-label {
+    display: block;
+    font-size: 12px;
+    color: #5a7a7f;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.detalhe-label i {
+    margin-right: 4px;
+    color: #4a9e8f;
+}
+
+.detalhe-valor {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a3a3f;
+}
+
+.detalhe-valor.status-ativo {
+    color: #28a745;
+}
+
+.detalhe-obs {
+    margin-top: 12px;
+    background: white;
+    border-radius: 10px;
+    padding: 12px 14px;
+}
+
+.detalhe-obs p {
+    margin: 4px 0 0 0;
+    font-size: 14px;
+    color: #5a7a7f;
+}
+
+.sem-agendamento-info {
+    text-align: center;
+    padding: 30px 20px;
+}
+
+.sem-agendamento-info i {
+    font-size: 40px;
+    color: #d4ece8;
+    margin-bottom: 12px;
+}
+
+.sem-agendamento-info p {
+    color: #5a7a7f;
+    font-size: 14px;
+    margin: 0;
+}
+
+.chat-info-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-iniciar-conversa {
+    flex: 1;
+    padding: 14px;
+    background: linear-gradient(135deg, #7ecfc5 0%, #5bb8ae 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    text-decoration: none;
+}
+
+.btn-iniciar-conversa:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(91, 184, 174, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-iniciar-conversa i {
+    margin-right: 8px;
+}
+
+/* ========== PLACEHOLDER SEM AGENDAMENTOS ========== */
+.chat-placeholder {
+    text-align: center;
+    max-width: 400px;
+}
+
+.chat-placeholder i {
+    font-size: 60px;
+    color: #d4ece8;
+    margin-bottom: 20px;
+}
+
+.chat-placeholder h3 {
+    font-size: 22px;
+    color: #1a3a3f;
+    margin-bottom: 10px;
+}
+
+.chat-placeholder p {
+    font-size: 15px;
+    color: #5a7a7f;
+    line-height: 1.6;
+}
+
+.btn-agendar-chat {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 35px;
+    background: linear-gradient(135deg, #7ecfc5 0%, #5bb8ae 100%);
+    color: white;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+.btn-agendar-chat:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(91, 184, 174, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-agendar-chat i {
+    margin-right: 8px;
+}
+
+/* ========== RESPONSIVIDADE ========== */
+@media (max-width: 900px) {
+    .chats-layout {
+        flex-direction: column;
+        border-radius: 16px;
+        min-height: auto;
+    }
+
+    .chats-sidebar {
+        width: 100%;
+        min-width: unset;
+        border-right: none;
+        border-bottom: 1px solid rgba(74, 158, 143, 0.1);
+        max-height: 350px;
+    }
+
+    .chat-main {
+        min-height: 300px;
+        padding: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 28px;
+    }
+
+    .chats-sidebar {
+        max-height: 300px;
+    }
+
+    .chat-item {
+        padding: 10px 14px;
+    }
+
+    .chat-item-avatar {
+        width: 38px;
+        height: 38px;
+        font-size: 17px;
+    }
+
+    .chat-item-nome {
+        font-size: 14px;
+    }
+
+    .chat-info-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .detalhes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chat-info-container {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .container-chats {
+        padding: 12px;
+    }
+
+    .chats-sidebar {
+        max-height: 260px;
+    }
+
+    .sidebar-header {
+        padding: 14px 18px;
+    }
+
+    .chat-item {
+        padding: 8px 12px;
+        gap: 10px;
+    }
+
+    .chat-item-avatar {
+        width: 34px;
+        height: 34px;
+        font-size: 15px;
+    }
+
+    .chat-item-nome {
+        font-size: 13px;
+    }
+
+    .chat-item-status {
+        font-size: 11px;
+    }
+
+    .chat-main {
+        padding: 16px;
+        min-height: 200px;
+    }
+
+    .chat-info-avatar {
+        width: 50px;
+        height: 50px;
+        font-size: 22px;
+    }
+
+    .chat-info-title h3 {
+        font-size: 17px;
+    }
+
+    .chat-info-detalhes {
+        padding: 15px;
+    }
+
+    .btn-iniciar-conversa {
+        font-size: 13px;
+        padding: 12px;
+    }
+}
+
+/* ========== MODO ESCURO ========== */
+body.modo-escuro .page-title { color: #ffffff !important; }
+body.modo-escuro .page-subtitle { color: #bbbbbb !important; }
+body.modo-escuro .chats-layout { background: #2a2a4a !important; border-color: #4a4a6a !important; }
+body.modo-escuro .chats-sidebar { background: #22223a !important; border-color: #4a4a6a !important; }
+body.modo-escuro .sidebar-header { background: #2a2a4a !important; border-color: #4a4a6a !important; }
+body.modo-escuro .sidebar-header h3 { color: #ffffff !important; }
+body.modo-escuro .total-chats { background: #3a3a5a !important; color: #7ecfc5 !important; }
+body.modo-escuro .chat-item-nome { color: #ffffff !important; }
+body.modo-escuro .chat-item-status { color: #bbbbbb !important; }
+body.modo-escuro .chat-item:hover { background: #3a3a5a !important; }
+body.modo-escuro .chat-item.has-messages { background: #333355 !important; }
+body.modo-escuro .chat-item.has-messages:hover { background: #3a3a5a !important; }
+body.modo-escuro .chat-main { background: #2a2a4a !important; }
+body.modo-escuro .chat-info-title h3 { color: #ffffff !important; }
+body.modo-escuro .chat-info-especialidade { color: #bbbbbb !important; }
+body.modo-escuro .chat-info-detalhes { background: #22223a !important; }
+body.modo-escuro .chat-info-detalhes h4 { color: #ffffff !important; }
+body.modo-escuro .detalhe-item { background: #2a2a4a !important; }
+body.modo-escuro .detalhe-label { color: #bbbbbb !important; }
+body.modo-escuro .detalhe-valor { color: #ffffff !important; }
+body.modo-escuro .detalhe-obs { background: #2a2a4a !important; }
+body.modo-escuro .detalhe-obs p { color: #bbbbbb !important; }
+body.modo-escuro .sem-agendamento-info p { color: #bbbbbb !important; }
+body.modo-escuro .chat-placeholder h3 { color: #ffffff !important; }
+body.modo-escuro .chat-placeholder p { color: #bbbbbb !important; }
+body.modo-escuro .sem-chats p { color: #bbbbbb !important; }
+body.modo-escuro .sem-chats i { color: #4a6a7a !important; }
+
+/* ========== CONTRASTE ========== */
+body.contraste .page-title { color: #ffffff !important; }
+body.contraste .page-subtitle { color: #dddddd !important; }
+body.contraste .chats-layout { background: #1a1a1a !important; border: 2px solid #ffff00 !important; }
+body.contraste .chats-sidebar { background: #111111 !important; border-color: #ffff00 !important; }
+body.contraste .sidebar-header { background: #1a1a1a !important; border-color: #ffff00 !important; }
+body.contraste .sidebar-header h3 { color: #ffffff !important; }
+body.contraste .total-chats { background: #2a2a2a !important; color: #ffff00 !important; border: 1px solid #ffff00 !important; }
+body.contraste .chat-item-nome { color: #ffffff !important; }
+body.contraste .chat-item-status { color: #dddddd !important; }
+body.contraste .chat-item:hover { background: #2a2a2a !important; border: 1px solid #ffff00 !important; }
+body.contraste .chat-item.has-messages { background: #222222 !important; border: 1px solid #ffff00 !important; }
+body.contraste .chat-item.has-messages:hover { background: #2a2a2a !important; }
+body.contraste .chat-main { background: #1a1a1a !important; }
+body.contraste .chat-info-title h3 { color: #ffffff !important; }
+body.contraste .chat-info-especialidade { color: #dddddd !important; }
+body.contraste .chat-info-detalhes { background: #111111 !important; border: 1px solid #ffff00 !important; }
+body.contraste .chat-info-detalhes h4 { color: #ffffff !important; }
+body.contraste .detalhe-item { background: #1a1a1a !important; border: 1px solid #ffff00 !important; }
+body.contraste .detalhe-label { color: #dddddd !important; }
+body.contraste .detalhe-valor { color: #ffffff !important; }
+body.contraste .detalhe-valor.status-ativo { color: #ffff00 !important; }
+body.contraste .detalhe-obs { background: #1a1a1a !important; border: 1px solid #ffff00 !important; }
+body.contraste .detalhe-obs p { color: #dddddd !important; }
+body.contraste .sem-agendamento-info p { color: #dddddd !important; }
+body.contraste .chat-placeholder h3 { color: #ffffff !important; }
+body.contraste .chat-placeholder p { color: #dddddd !important; }
+body.contraste .sem-chats p { color: #ffffff !important; }
+body.contraste .sem-chats i { color: #ffff00 !important; }
+body.contraste .btn-agendar-chat { background: #ffff00 !important; color: #000000 !important; }
+body.contraste .btn-agendar-chat:hover { background: #ffff00 !important; color: #000000 !important; }
+body.contraste .btn-iniciar-conversa { background: #ffff00 !important; color: #000000 !important; }
+body.contraste .btn-iniciar-conversa:hover { background: #ffff00 !important; color: #000000 !important; }
+</style>
+{% endblock %}

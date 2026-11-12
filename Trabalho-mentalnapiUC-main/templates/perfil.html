@@ -1,0 +1,686 @@
+{% extends "base.html" %}
+
+{% block titulo %}Meu Perfil - MentalNAPI{% endblock %}
+{% block nav_perfil %}active{% endblock %}
+
+{% block conteudo %}
+<div class="container-perfil">
+
+  <!-- CABEÇALHO -->
+  <header class="perfil-header">
+    <h1 class="page-title"><i class="fas fa-user-circle" aria-hidden="true"></i> Meu Perfil</h1>
+    <p class="page-subtitle">Gerencie suas informações pessoais, foto e preferências</p>
+  </header>
+
+  <!-- FLASH MESSAGES -->
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% if msgs %}
+      <div class="flash-area" role="alert">
+        {% for cat, msg in msgs %}
+          <div class="flash flash-{{ cat }}">
+            <i class="fas {{ 'fa-check-circle' if cat == 'sucesso' else 'fa-exclamation-circle' }}"></i>
+            {{ msg }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <div class="perfil-grid">
+
+    <!-- ===== CARTÃO LATERAL (RESUMO) ===== -->
+    <aside class="perfil-card">
+      <div class="perfil-avatar-wrap">
+        {% if paciente.foto %}
+          <img src="{{ url_for('static', filename=paciente.foto) }}"
+               alt="Foto de {{ paciente.nome }}" class="perfil-avatar-img">
+        {% else %}
+          <div class="perfil-avatar-iniciais" aria-hidden="true">
+            {{ paciente.iniciais }}
+          </div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data" class="form-foto">
+          <input type="hidden" name="acao" value="foto">
+          <label for="foto" class="btn-foto" title="Alterar foto">
+            <i class="fas fa-camera" aria-hidden="true"></i>
+          </label>
+          <input type="file" id="foto" name="foto" accept="image/*"
+                 class="input-foto" onchange="this.form.submit()">
+        </form>
+
+        {% if paciente.foto %}
+          <form method="POST" class="form-remover-foto">
+            <input type="hidden" name="acao" value="remover_foto">
+            <button type="submit" class="btn-remover-foto" title="Remover foto"
+                    onclick="return confirm('Remover sua foto de perfil?')">
+              <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+          </form>
+        {% endif %}
+      </div>
+
+      <h2 class="perfil-nome">{{ paciente.nome }}</h2>
+      <p class="perfil-email">{{ paciente.email }}</p>
+
+      <div class="perfil-badges">
+        {% if paciente.idade %}
+          <span class="badge"><i class="fas fa-birthday-cake"></i> {{ paciente.idade }} anos</span>
+        {% endif %}
+        {% if paciente.unidade %}
+          <span class="badge"><i class="fas fa-hospital"></i> {{ paciente.unidade.nome }}</span>
+        {% endif %}
+      </div>
+
+      {% if paciente.bio %}
+        <p class="perfil-bio">{{ paciente.bio }}</p>
+      {% endif %}
+    </aside>
+
+    <!-- ===== COLUNA DE FORMULÁRIOS ===== -->
+    <div class="perfil-conteudo">
+
+      <!-- DADOS PESSOAIS -->
+      <section class="perfil-section" aria-labelledby="titulo-dados">
+        <h3 id="titulo-dados"><i class="fas fa-id-card" aria-hidden="true"></i> Dados Pessoais</h3>
+
+        <form method="POST" class="perfil-form">
+          <input type="hidden" name="acao" value="dados">
+
+          <div class="form-grid">
+            <div class="form-group full">
+              <label for="nome">Nome completo *</label>
+              <input type="text" id="nome" name="nome" required minlength="3"
+                     value="{{ paciente.nome }}" autocomplete="name">
+            </div>
+
+            <div class="form-group">
+              <label for="email">E-mail</label>
+              <input type="email" id="email" value="{{ paciente.email }}" disabled
+                     title="O e-mail não pode ser alterado">
+            </div>
+
+            <div class="form-group">
+              <label for="telefone">Telefone</label>
+              <input type="tel" id="telefone" name="telefone"
+                     value="{{ paciente.telefone or '' }}"
+                     placeholder="(11) 99999-9999" autocomplete="tel">
+            </div>
+
+            <div class="form-group">
+              <label for="data_nascimento">Data de nascimento</label>
+              <input type="date" id="data_nascimento" name="data_nascimento"
+                     value="{{ paciente.data_nascimento.isoformat() if paciente.data_nascimento else '' }}"
+                     max="{{ hoje_iso if hoje_iso else '' }}">
+            </div>
+
+            <div class="form-group">
+              <label for="genero">Gênero</label>
+              <select id="genero" name="genero">
+                <option value="">Prefiro não informar</option>
+                {% for g in ['Feminino', 'Masculino', 'Não binário', 'Outro'] %}
+                  <option value="{{ g }}" {% if paciente.genero == g %}selected{% endif %}>{{ g }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="form-group full">
+              <label for="bio">Sobre você</label>
+              <textarea id="bio" name="bio" rows="3" maxlength="300"
+                        placeholder="Conte um pouco sobre você (opcional)">{{ paciente.bio or '' }}</textarea>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">
+              <i class="fas fa-save" aria-hidden="true"></i> Salvar dados
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ALTERAR SENHA -->
+      <section class="perfil-section" aria-labelledby="titulo-senha">
+        <h3 id="titulo-senha"><i class="fas fa-lock" aria-hidden="true"></i> Alterar Senha</h3>
+
+        <form method="POST" class="perfil-form" id="form-senha">
+          <input type="hidden" name="acao" value="senha">
+
+          <div class="form-grid">
+            <div class="form-group full">
+              <label for="senha_atual">Senha atual *</label>
+              <input type="password" id="senha_atual" name="senha_atual" required
+                     autocomplete="current-password">
+            </div>
+
+            <div class="form-group">
+              <label for="senha_nova">Nova senha *</label>
+              <input type="password" id="senha_nova" name="senha_nova" required
+                     minlength="8" autocomplete="new-password">
+              <small class="hint">Mínimo 8 caracteres</small>
+            </div>
+
+            <div class="form-group">
+              <label for="senha_conf">Confirmar nova senha *</label>
+              <input type="password" id="senha_conf" name="senha_conf" required
+                     minlength="8" autocomplete="new-password">
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">
+              <i class="fas fa-key" aria-hidden="true"></i> Alterar senha
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- PREFERÊNCIAS DE ACESSIBILIDADE -->
+      <section class="perfil-section" aria-labelledby="titulo-pref">
+        <h3 id="titulo-pref"><i class="fas fa-universal-access" aria-hidden="true"></i> Acessibilidade</h3>
+
+        <form method="POST" class="perfil-form">
+          <input type="hidden" name="acao" value="preferencias">
+
+          <div class="pref-list">
+            <label class="pref-item">
+              <input type="checkbox" name="modo_escuro" {% if paciente.pref_modo_escuro %}checked{% endif %}>
+              <div class="pref-info">
+                <span class="pref-titulo"><i class="fas fa-moon"></i> Modo escuro</span>
+                <span class="pref-desc">Reduz o brilho da tela em ambientes com pouca luz</span>
+              </div>
+            </label>
+
+            <label class="pref-item">
+              <input type="checkbox" name="contraste" {% if paciente.pref_contraste %}checked{% endif %}>
+              <div class="pref-info">
+                <span class="pref-titulo"><i class="fas fa-adjust"></i> Alto contraste</span>
+                <span class="pref-desc">Aumenta o contraste das cores para melhor leitura</span>
+              </div>
+            </label>
+
+            <label class="pref-item">
+              <input type="checkbox" name="fonte_grande" {% if paciente.pref_fonte_grande %}checked{% endif %}>
+              <div class="pref-info">
+                <span class="pref-titulo"><i class="fas fa-font"></i> Fonte ampliada</span>
+                <span class="pref-desc">Aumenta o tamanho do texto em todo o site</span>
+              </div>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">
+              <i class="fas fa-check" aria-hidden="true"></i> Salvar preferências
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ZONA DE PERIGO -->
+      <section class="perfil-section perigo" aria-labelledby="titulo-perigo">
+        <h3 id="titulo-perigo"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i> Zona de Perigo</h3>
+        <p class="perigo-texto">
+          A exclusão da conta é permanente. Todos os seus dados, histórico de conversas
+          e agendamentos serão removidos e não poderão ser recuperados.
+        </p>
+        <button type="button" class="btn-perigo" id="btn-excluir">
+          <i class="fas fa-trash-alt" aria-hidden="true"></i> Excluir minha conta
+        </button>
+      </section>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block estilos_especificos %}
+<style>
+/* ============================================================
+   VARIÁVEIS — reutiliza as do chats.html
+   ============================================================ */
+:root {
+  --c-bg: #ffffff;
+  --c-bg-soft: #f8fbfa;
+  --c-bg-hover: #d4ece8;
+  --c-primary: #4a9e8f;
+  --c-primary-dark: #5bb8ae;
+  --c-primary-light: #7ecfc5;
+  --c-primary-soft: #d4ece8;
+  --c-text: #1a3a3f;
+  --c-text-soft: #5a7a7f;
+  --c-border: rgba(74, 158, 143, 0.12);
+  --c-danger: #d9534f;
+  --c-danger-dark: #c9302c;
+  --c-sucesso: #28a745;
+  --c-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+/* ============================================================
+   CONTAINER
+   ============================================================ */
+.container-perfil {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+}
+
+.perfil-header { text-align: center; margin-bottom: 32px; }
+
+.page-title {
+  font-size: 34px; font-weight: 800;
+  color: var(--c-text); margin: 0 0 6px;
+}
+.page-title i { color: var(--c-primary); }
+
+.page-subtitle { color: var(--c-text-soft); font-size: 15px; margin: 0; }
+
+/* ============================================================
+   FLASH
+   ============================================================ */
+.flash-area { max-width: 700px; margin: 0 auto 20px; }
+.flash {
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 8px;
+}
+.flash-sucesso { background: #e7f7ec; color: #1f6d33; border-left: 4px solid var(--c-sucesso); }
+.flash-erro    { background: #fdecec; color: #7a1f1c; border-left: 4px solid var(--c-danger); }
+
+/* ============================================================
+   GRID PRINCIPAL
+   ============================================================ */
+.perfil-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ============================================================
+   CARTÃO LATERAL
+   ============================================================ */
+.perfil-card {
+  background: var(--c-bg);
+  border-radius: 20px;
+  box-shadow: var(--c-shadow);
+  border: 1px solid var(--c-border);
+  padding: 28px 22px;
+  text-align: center;
+  position: sticky;
+  top: 20px;
+}
+
+.perfil-avatar-wrap {
+  position: relative;
+  width: 130px; height: 130px;
+  margin: 0 auto 16px;
+}
+
+.perfil-avatar-img,
+.perfil-avatar-iniciais {
+  width: 130px; height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--c-primary-soft);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.perfil-avatar-iniciais {
+  background: linear-gradient(135deg, var(--c-primary-light), var(--c-primary-dark));
+  color: #fff;
+  font-size: 42px;
+  font-weight: 700;
+}
+
+/* Botão de câmera */
+.form-foto { position: absolute; bottom: 0; right: 0; }
+.btn-foto {
+  display: flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--c-primary);
+  color: #fff;
+  cursor: pointer;
+  border: 3px solid var(--c-bg);
+  transition: transform 0.2s;
+}
+.btn-foto:hover { transform: scale(1.1); }
+.input-foto { display: none; }
+
+/* Botão remover foto */
+.form-remover-foto { position: absolute; top: 0; right: 0; }
+.btn-remover-foto {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 3px solid var(--c-bg);
+  background: var(--c-danger);
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  transition: transform 0.2s;
+}
+.btn-remover-foto:hover { transform: scale(1.1); }
+
+.perfil-nome { font-size: 19px; color: var(--c-text); margin: 0 0 4px; font-weight: 700; }
+.perfil-email { font-size: 13px; color: var(--c-text-soft); margin: 0 0 14px; word-break: break-all; }
+
+.perfil-badges { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 14px; }
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--c-primary-soft);
+  color: var(--c-primary);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px; font-weight: 600;
+}
+.badge i { font-size: 11px; }
+
+.perfil-bio {
+  font-size: 13px; color: var(--c-text-soft);
+  line-height: 1.5; margin: 12px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--c-border);
+}
+
+/* ============================================================
+   SEÇÕES / FORMULÁRIOS
+   ============================================================ */
+.perfil-conteudo { display: flex; flex-direction: column; gap: 20px; }
+
+.perfil-section {
+  background: var(--c-bg);
+  border-radius: 20px;
+  box-shadow: var(--c-shadow);
+  border: 1px solid var(--c-border);
+  padding: 24px 26px;
+}
+
+.perfil-section h3 {
+  font-size: 16px; color: var(--c-text);
+  margin: 0 0 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--c-bg-soft);
+  display: flex; align-items: center; gap: 8px;
+}
+.perfil-section h3 i { color: var(--c-primary); }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group { display: flex; flex-direction: column; }
+.form-group.full { grid-column: 1 / -1; }
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-text);
+  margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--c-primary-soft);
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--c-text);
+  background: var(--c-bg);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--c-primary-dark);
+  box-shadow: 0 0 0 3px rgba(91, 184, 174, 0.15);
+}
+
+.form-group input:disabled {
+  background: var(--c-bg-soft);
+  cursor: not-allowed;
+  color: var(--c-text-soft);
+}
+
+.form-group textarea { resize: vertical; min-height: 80px; }
+
+.hint { font-size: 11px; color: var(--c-text-soft); margin-top: 4px; }
+
+.form-actions { margin-top: 20px; display: flex; justify-content: flex-end; }
+
+/* ============================================================
+   BOTÕES
+   ============================================================ */
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 28px;
+  background: linear-gradient(135deg, var(--c-primary-light), var(--c-primary-dark));
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(91, 184, 174, 0.35);
+}
+
+.btn-perigo {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 24px;
+  background: var(--c-danger);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-perigo:hover { background: var(--c-danger-dark); }
+
+/* ============================================================
+   PREFERÊNCIAS
+   ============================================================ */
+.pref-list { display: flex; flex-direction: column; gap: 12px; }
+
+.pref-item {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 14px 16px;
+  border: 1.5px solid var(--c-border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.pref-item:hover { border-color: var(--c-primary); background: var(--c-bg-soft); }
+.pref-item:has(input:checked) {
+  border-color: var(--c-primary);
+  background: var(--c-bg-soft);
+}
+
+.pref-item input[type="checkbox"] {
+  appearance: none;
+  width: 42px; height: 24px;
+  min-width: 42px;
+  border-radius: 12px;
+  background: #cfd8d6;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 2px;
+}
+.pref-item input[type="checkbox"]::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+}
+.pref-item input[type="checkbox"]:checked { background: var(--c-primary); }
+.pref-item input[type="checkbox"]:checked::after { transform: translateX(18px); }
+
+.pref-info { display: flex; flex-direction: column; gap: 2px; }
+.pref-titulo { font-size: 14px; font-weight: 600; color: var(--c-text); }
+.pref-titulo i { color: var(--c-primary); margin-right: 6px; }
+.pref-desc { font-size: 12px; color: var(--c-text-soft); }
+
+/* ============================================================
+   ZONA DE PERIGO
+   ============================================================ */
+.perfil-section.perigo {
+  border: 1.5px solid rgba(217, 83, 79, 0.3);
+  background: #fffafa;
+}
+.perfil-section.perigo h3 { color: var(--c-danger); border-color: rgba(217, 83, 79, 0.2); }
+.perfil-section.perigo h3 i { color: var(--c-danger); }
+
+.perigo-texto { font-size: 13px; color: var(--c-text-soft); line-height: 1.6; margin: 0 0 16px; }
+
+/* ============================================================
+   RESPONSIVO
+   ============================================================ */
+@media (max-width: 900px) {
+  .perfil-grid { grid-template-columns: 1fr; }
+  .perfil-card { position: static; }
+  .form-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .container-perfil { padding: 12px 12px 40px; }
+  .page-title { font-size: 26px; }
+  .perfil-section { padding: 20px 18px; }
+  .perfil-avatar-wrap,
+  .perfil-avatar-img,
+  .perfil-avatar-iniciais { width: 100px; height: 100px; }
+  .perfil-avatar-iniciais { font-size: 34px; }
+}
+
+/* ============================================================
+   MODO ESCURO
+   ============================================================ */
+body.modo-escuro {
+  --c-bg: #2a2a4a;
+  --c-bg-soft: #22223a;
+  --c-bg-hover: #3a3a5a;
+  --c-text: #ffffff;
+  --c-text-soft: #bbbbbb;
+  --c-border: #4a4a6a;
+  --c-primary-soft: #3a3a5a;
+  --c-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+body.modo-escuro .flash-sucesso { background: #1f3a28; color: #7be08f; }
+body.modo-escuro .flash-erro    { background: #3a1f1f; color: #ff9b96; }
+body.modo-escuro .perfil-section.perigo { background: #2a1a1a; }
+
+/* ============================================================
+   ALTO CONTRASTE
+   ============================================================ */
+body.contraste {
+  --c-bg: #1a1a1a;
+  --c-bg-soft: #111111;
+  --c-text: #ffffff;
+  --c-text-soft: #dddddd;
+  --c-border: #ffff00;
+  --c-primary: #ffff00;
+  --c-primary-dark: #ffff00;
+  --c-primary-light: #ffff00;
+  --c-primary-soft: #2a2a2a;
+  --c-shadow: none;
+}
+body.contraste .perfil-card,
+body.contraste .perfil-section { border: 2px solid #ffff00; }
+body.contraste .btn-primary,
+body.contraste .btn-perigo { background: #ffff00; color: #000; }
+body.contraste .btn-primary i,
+body.contraste .btn-perigo i { color: #000; }
+body.contraste .pref-item input[type="checkbox"]:checked { background: #ffff00; }
+
+/* Focus visível */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--c-primary);
+  outline-offset: 2px;
+}
+</style>
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+(function () {
+  // ---- Confirmar exclusão de conta ----
+  const btnExcluir = document.getElementById('btn-excluir');
+  if (btnExcluir) {
+    btnExcluir.addEventListener('click', () => {
+      const ok = confirm(
+        'Tem certeza que deseja excluir sua conta?\n\n' +
+        'Esta ação é PERMANENTE e removerá todos os seus dados.'
+      );
+      if (ok) {
+        const txt = prompt('Digite EXCLUIR para confirmar:');
+        if (txt === 'EXCLUIR') {
+          window.location.href = "{{ url_for('perfil.perfil') }}?excluir=1";
+        }
+      }
+    });
+  }
+
+  // ---- Máscara de telefone ----
+  const tel = document.getElementById('telefone');
+  if (tel) {
+    tel.addEventListener('input', (e) => {
+      let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+      if (v.length > 6) {
+        v = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+      } else if (v.length > 2) {
+        v = `(${v.slice(0,2)}) ${v.slice(2)}`;
+      }
+      e.target.value = v;
+    });
+  }
+
+  // ---- Aplicar preferências em tempo real (checkbox) ----
+  const prefMap = {
+    modo_escuro: 'modo-escuro',
+    contraste: 'contraste',
+    fonte_grande: 'fonte-grande'
+  };
+  document.querySelectorAll('.pref-item input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const cls = prefMap[cb.name];
+      if (cls) document.body.classList.toggle(cls, cb.checked);
+    });
+  });
+
+  // ---- Validação de senha no submit ----
+  const formSenha = document.getElementById('form-senha');
+  if (formSenha) {
+    formSenha.addEventListener('submit', (e) => {
+      const nova = document.getElementById('senha_nova').value;
+      const conf = document.getElementById('senha_conf').value;
+      if (nova !== conf) {
+        e.preventDefault();
+        alert('As senhas não coincidem.');
+      }
+    });
+  }
+})();
+</script>
+{% endblock %}
